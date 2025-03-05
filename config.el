@@ -21,7 +21,8 @@
 ;; See 'C-h v doom-font' for documentation and more examples of what they
 ;; accept. For example:
 ;;
-;;(setq doom-font (font-spec :family "Fira Code" :size 12 :weight 'semi-light)
+;; (setq doom-font (font-spec :family "Maple Mono" :size 14 :weight 'light))
+(setq doom-font (font-spec :family "DepartureMono Nerd Font" :size 13 :weight 'light))
 ;;      doom-variable-pitch-font (font-spec :family "Fira Sans" :size 13))
 ;;
 ;; If you or Emacs can't find your font, use 'M-x describe-font' to look them
@@ -32,12 +33,14 @@
 ;; There are two ways to load a theme. Both assume the theme is installed and
 ;; available. You can either set `doom-theme' or manually load a theme with the
 ;; `load-theme' function. This is the default:
-(setq doom-theme 'doom-pine)
+(setq doom-theme 'doom-gruvbox)
+
+;; Font
+;; (setq doom-font (font-spec :family "Aporetic Serif Mono" :size 10))
 
 ;; This determines the style of line numbers in effect. If set to `nil', line
 ;; numbers are disabled. For relative line numbers, set this to `relative'.
 (setq display-line-numbers-type 'relative)
-
 
 
 ;; Whenever you reconfigure a package, make sure to wrap your config in an
@@ -71,6 +74,24 @@
 ;;
 ;; You can also try 'gd' (or 'C-c c d') to jump to their definition and see how
 ;; they are implemented.
+
+;; Themeing
+(defvar my/theme-file (expand-file-name "last-theme.el" doom-user-dir)
+  "File to store the last used theme.")
+
+;; Function to save current theme
+(defun my/save-current-theme ()
+  "Save the current doom-theme as the last used theme."
+  (when (and doom-theme (not (eq doom-theme 'user)))
+    (with-temp-file my/theme-file
+      (insert (format "(setq doom-theme '%s)" doom-theme)))))
+
+;; Add our save function to doom-load-theme-hook
+(add-hook 'doom-load-theme-hook #'my/save-current-theme)
+
+;; Load the saved theme file on startup if it exists
+(when (file-exists-p my/theme-file)
+  (load my/theme-file nil t))
 
 ;; Evil mode
 (after! evil
@@ -109,6 +130,15 @@
         :prefix "s"
         :desc "Promote heading" "<" #'my/org-do-promote)
   )
+
+;; Org mode - PDF
+(save-place-mode 1)
+
+;; Configure org-mode to use pdf-tools for PDFs
+;; (after! org
+;;   (push '("\\.pdf\\'" . pdf-view-mode) org-file-apps)
+;;   (add-to-list 'org-file-apps '("\\.pdf::\\([0-9]+\\)\\'" . pdf-view-mode))
+;;   (add-to-list 'org-file-apps '("\\.pdf::\\([0-9]+\\)\\'" . pdf-view-mode)))
 
 ;; GPTel
 (use-package! gptel
