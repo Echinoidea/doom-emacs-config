@@ -56,6 +56,9 @@
 (package! saveplace-pdf-view)
 (package! listen)
 
+;; LSP
+(package! lsp-tailwindcss :recipe (:host github :repo "merrickluo/lsp-tailwindcss"))
+
 ;; Themes
 (package! organic-green-theme)
 (package! soothe-theme)

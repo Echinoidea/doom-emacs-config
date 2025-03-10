@@ -1,1 +1,1 @@
-(setq doom-theme 'kaolin-shiva)
+(setq doom-theme 'doom-old-hope)

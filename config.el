@@ -22,7 +22,7 @@
 ;; accept. For example:
 ;;
 ;; (setq doom-font (font-spec :family "Maple Mono" :size 14 :weight 'light))
-(setq doom-font (font-spec :family "DepartureMono Nerd Font" :size 13 :weight 'light))
+(setq doom-font (font-spec :family "JuliaMono Nerd Font" :size 11 :weight 'light))
 ;;      doom-variable-pitch-font (font-spec :family "Fira Sans" :size 13))
 ;;
 ;; If you or Emacs can't find your font, use 'M-x describe-font' to look them
@@ -148,8 +148,62 @@
     (when auth-token
       (setq gptel-api-key auth-token))))
 
+(after! gptel
+  (setq gptel-model 'gpt-4o))
 
+(after! gptel
+  (map! :leader
+        :prefix "l"
+        :desc "GPTel Open Buffer" "b" #'gptel
+        :desc "GPTel Menu" "m" #'gptel-mode
+        :desc "GPTel Add" "a" #'gptel-add
+        :desc "GPTel Add File" "f" #'gptel-add-file
+        :desc "GPTel Rewrite" "r" #'gptel-rewrite
+        ))
+
+
+;; LSP
 (after! rustic
   (setq rustic-lsp-server 'rust-analyzer)
   (setq rustic-format-on-save t)
   (setq rustic-format-display-buffer nil))
+
+(use-package! lsp-tailwindcss :after lsp-mode)
+
+;; Set up TypeScript LSP
+(after! lsp-mode
+  (setq lsp-typescript-suggest-complete-function-calls t
+        lsp-typescript-format-enable t
+        lsp-typescript-preferences-import-module-specifier "relative"))
+
+;; Format on save for TypeScript files
+(add-hook! (typescript-mode typescript-tsx-mode)
+  (add-hook 'before-save-hook #'lsp-format-buffer nil t))
+
+;; Set up file associations for Next.js
+(add-to-list 'auto-mode-alist '("\\.tsx\\'" . typescript-tsx-mode))
+(add-to-list 'auto-mode-alist '("\\.jsx\\'" . web-mode))
+(add-to-list 'auto-mode-alist '("\\.ts\\'" . typescript-mode))
+(add-to-list 'auto-mode-alist '("\\.js\\'" . web-mode))
+
+;; Setup eslint integration
+(after! lsp-mode
+  (add-to-list 'lsp-language-id-configuration '(typescript-tsx-mode . "typescriptreact"))
+  (add-hook 'typescript-tsx-mode-hook #'lsp!))
+
+
+;(defun run-pywal-after-theme-switch ()
+;  "Run the shell script that updates Pywal from cache."
+;  (let ((script-path (expand-file-name "~/.config/polybar/hack/scripts/pywal-from-cache.sh")))
+;    (when (file-executable-p script-path) ; Check if the script is executable
+;      (shell-command script-path)))
+;  (let ((script-path (expand-file-name "~/.config/polybar/hack/launch.sh")))
+;    (when (file-executable-p script-path) ; Check if the script is executable
+;      (shell-command script-path))))
+;
+;(defun theme-magic-and-pywal ()
+;  "Run theme-magic and then update pywal from cache."
+;  (theme-magic-from-emacs)
+;  (run-pywal-after-theme-switch))
+;
+;(add-hook 'doom-load-theme-hook #'theme-magic-and-pywal)

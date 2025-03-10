@@ -9,7 +9,8 @@
  '(org-safe-remote-resources
    '("\\`https://fniessen\\.github\\.io/org-html-themes/org/theme-bigblow\\.setup\\'"
      "\\`https://fniessen\\.github\\.io/org-html-themes/org/theme-readtheorg\\.setup\\'"
-     "\\`https://fniessen\\.github\\.io/org-html-themes/org/read-the-docs\\.setup\\'")))
+     "\\`https://fniessen\\.github\\.io/org-html-themes/org/read-the-docs\\.setup\\'"))
+ '(send-mail-function 'mailclient-send-it))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
