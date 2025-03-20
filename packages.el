@@ -48,6 +48,8 @@
 ;; (unpin! pinned-package another-pinned-package)
 ;; ...Or *all* packages (NOT RECOMMENDED; will likely break things)
 ;; (unpin! t)
+(unpin! lsp-mode)
+
 
 (package! all-the-icons)
 (package! gptel)
@@ -59,7 +61,13 @@
 ;; LSP
 (package! lsp-tailwindcss :recipe (:host github :repo "merrickluo/lsp-tailwindcss"))
 
+;; Visuals
+(package! beacon)
+
 ;; Themes
+;; (package! builtin-package :disable t)
+(package! doom-theme :disable t)
+
 (package! organic-green-theme)
 (package! soothe-theme)
 (package! cherry-blossom-theme)
@@ -75,3 +83,51 @@
 (package! apropospriate-theme)
 (package! ample-theme)
 (package! moe-theme)
+(package! amber-glow-theme)
+(package! berry-theme)
+(package! ember-twilight-theme)
+(package! roseline-theme)
+(package! solarized-gruvbox-theme)
+(package! stimmung-themes)
+(package! naysayer-theme)
+(package! ef-themes)
+(package! almost-mono-themes)
+(package! badwolf-theme)
+;; (package! base16-themes)
+(package! birds-of-paradise-plus-theme)
+(package! brutalist-theme)
+(package! clues-theme)
+(package! creamsody-theme)
+(package! phoenix-dark-pink-theme)
+(package! eziam-themes)
+(package! faff-theme)
+(package! forest-blue-theme)
+(package! gotham-theme)
+;; (package! green-phoshor-theme)
+(package! inkpot-theme)
+(package! lavender-theme)
+(package! laguna-theme)
+(package! metalheart-theme)
+(package! naga-theme)
+(package! nordic-night-theme)
+;; (package! old-lace-theme)
+(package! slime-theme)
+(package! soft-stone-theme)
+;; (package! spike-theme)
+(package! srcery-theme)
+(package! sunburn-theme)
+(package! suscolors-theme)
+(package! toxi-theme)
+(package! tron-legacy-theme)
+(package! warm-night-theme)
+(package! purple-haze-theme)
+;; (package! nofrills-themes)
+
+;; Use this for non MELPA themes
+(package! retro-orange-theme
+  :recipe (:host github :repo "emacs-jp/replace-colorthemes"
+           :files ("retro-orange-theme.el")))
+
+(package! naga-blue-theme
+  :recipe (:host github :repo "amolv06/naga-blue"
+           :files ("naga-blue-theme.el")))
