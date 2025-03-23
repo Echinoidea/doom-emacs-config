@@ -1,1 +1,1 @@
-(setq doom-theme 'creamsody-dark)
+(setq doom-theme 'creamsody-pitchblack)

@@ -80,22 +80,22 @@
   (setq vterm-shell "/sbin/fish"))
 
 ;; Themeing
-(defvar my/theme-file (expand-file-name "last-theme.el" doom-user-dir)
-  "File to store the last used theme.")
-
-;; Function to save current theme
-(defun my/save-current-theme ()
-  "Save the current doom-theme as the last used theme."
-  (when (and doom-theme (not (eq doom-theme 'user)))
-    (with-temp-file my/theme-file
-      (insert (format "(setq doom-theme '%s)" doom-theme)))))
-
-;; Add our save function to doom-load-theme-hook
-(add-hook 'doom-load-theme-hook #'my/save-current-theme)
-
-;; Load the saved theme file on startup if it exists
-(when (file-exists-p my/theme-file)
-  (load my/theme-file nil t))
+;(defvar my/theme-file (expand-file-name "last-theme.el" doom-user-dir)
+;  "File to store the last used theme.")
+;
+;;; Function to save current theme
+;(defun my/save-current-theme ()
+;  "Save the current doom-theme as the last used theme."
+;  (when (and doom-theme (not (eq doom-theme 'user)))
+;    (with-temp-file my/theme-file
+;      (insert (format "(setq doom-theme '%s)" doom-theme)))))
+;
+;;; Add our save function to doom-load-theme-hook
+;(add-hook 'doom-load-theme-hook #'my/save-current-theme)
+;
+;;; Load the saved theme file on startup if it exists
+;(when (file-exists-p my/theme-file)
+;  (load my/theme-file nil t))
 
 ;; Evil mode
 (after! evil
@@ -137,6 +137,13 @@
 
 ;; Org mode - PDF
 (save-place-mode 1)
+
+
+(setq org-capture-templates
+      '(("j" "Journal Entry" entry
+         (file+datetree "~/org/journal.org")
+         "* Entry %T\n** Mood\n** Events\n** Work\n** Future Plans\n"
+         :empty-lines 1)))
 
 ;; Configure org-mode to use pdf-tools for PDFs
 ;; (after! org
