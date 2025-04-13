@@ -57,13 +57,20 @@
 (package! theme-magic)
 (package! saveplace-pdf-view)
 (package! listen)
+(package! org-roam-ui)
+(package! org-modern)
+(package! org-super-agenda)
+(package! org-modern-indent
+  :recipe (:host nil :repo "https://github.com/jdtsmith/org-modern-indent"
+           :files ("*.el")
+           ))
 
 ;; LSP
 (package! lsp-tailwindcss :recipe (:host github :repo "merrickluo/lsp-tailwindcss"))
-(package! aphelesia)
 
 ;; Visuals
-(package! beacon)
+;; (package! beacon)
+(package! solaire-mode)
 
 ;; Themes
 ;; (package! builtin-package :disable t)
@@ -94,7 +101,6 @@
 (package! ef-themes)
 (package! almost-mono-themes)
 (package! badwolf-theme)
-;; (package! base16-themes)
 (package! birds-of-paradise-plus-theme)
 (package! brutalist-theme)
 (package! clues-theme)
@@ -122,6 +128,7 @@
 (package! tron-legacy-theme)
 (package! warm-night-theme)
 (package! purple-haze-theme)
+(package! xresources-theme)
 ;; (package! nofrills-themes)
 
 ;; Use this for non MELPA themes
@@ -132,3 +139,28 @@
 (package! naga-blue-theme
   :recipe (:host github :repo "amolv06/naga-blue"
            :files ("naga-blue-theme.el")))
+
+(package! colorless-themes
+  :recipe (:host nil :repo "https://git.sr.ht/~lthms/colorless-themes.el"
+           :files ("*.el")
+           ))
+
+(package! everblush-theme
+  :recipe (:host nil :repo "https://github.com/Everblush/doomemacs"
+           :files ("*.el")
+           ))
+
+(package! green-is-the-new-black
+  :recipe (:host nil :repo "https://github.com/fredcamps/green-is-the-new-black-emacs"
+           :files ("*.el")
+           ))
+
+
+(package! future-green-theme
+  :recipe (:host nil :repo "https://github.com/Echinoidea/future-green-theme.el"
+           :files ("*.el")
+           ))
+
+(package! ewal)
+
+(package! vue-mode)

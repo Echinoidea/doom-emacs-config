@@ -21,7 +21,13 @@
 ;; See 'C-h v doom-font' for documentation and more examples of what they
 ;; accept. For example:
 ;;
-(setq doom-font (font-spec :family "ZedMono Nerd Font" :size 13 :weight 'light))
+;; (setq doom-font (font-spec :family "ProggyClean Nerd Font Mono" :size 14))
+;; (setq doom-font (font-spec :family "Kirsch Nerd Font Mono" :size 20 ))
+;; (setq doom-font (font-spec :family "CozetteCrossedSevenVector" :size 20 ))
+;; (setq doom-font (font-spec :family "ZedMono Nerd Font" :size 12))
+;; (setq doom-font (font-spec :family "Hack Nerd Font Propo" :size 12))
+(setq doom-font (font-spec :family "GoMono Nerd Font" :size 12))
+
 ;; (setq doom-font (font-spec :family "" :size 11 :weight 'light))
 ;;      doom-variable-pitch-font (font-spec :family "Fira Sans" :size 13))
 ;;
@@ -33,7 +39,65 @@
 ;; There are two ways to load a theme. Both assume the theme is installed and
 ;; available. You can either set `doom-theme' or manually load a theme with the
 ;; `load-theme' function. This is the default:
-(setq doom-theme 'doom-gruvbox)
+
+
+;; Favorite themes:
+;; modus-operandi-tinted
+;; purple-haze
+;; naga-blue
+;; tron-legacy
+;; sus-colors (Makes heading font sizes too big though)
+;; srcery (gruvbox but kinda nicer)
+;; phoenix-dark-pink
+;; ef-winter
+;; tao-yin
+;; ef-spring
+;; ef-symbiosis
+;; ef-summer
+;; ef-reverie
+;; ef-owl
+;; ef-night
+;; ef-dark
+;; ef-maris-dark
+;; ef-kassio
+;; ef-elea-dark
+;; ef-eagle
+;; ef-duo-dark
+;; ef-dream
+;; ef-day
+;; ef-cyprus
+;; ef-cherie
+;; ef-bio
+;; ef-autumn
+;; ef-arbutus
+;; wilson
+;; ritchie (light and blue)
+;; afternoon
+;; jazz (really muted gruvboxy)
+;; soothe (default, darker, and obsidian )(keywords are highlighted softly which is interesting)
+;; organic-green (w98 vibes with light green)
+;; doom-winter-is-coming-light (nice bright snowy colors, good on shitty monitor)
+;; doom-wilmersdorf (kinda like nord but evil)
+;; doom-tomorrow-night (very profesional and slightly muted)
+;; doom-tomorrow-day (good pure white light theme)
+;; doom-sourcerer (nice greens in Rust, nice bg)
+;; doom-rouge (good, slightly blue, good on bad monitor)
+;; doom-plain-dark and plain, compare with tao-yin and tao-yang
+;; doom-pine (really green and gruvboxy)
+;; doom-miramare
+;; doom-meltbus (underline instead of cursorline highlight)
+;; doom-lantern (muted red)
+;; doom-ir-black (solid black theme)
+;; doom-flatwhite (certain keywords and strings are highlighted which is actually really nice on a light theme)
+;; doom-earl-grey
+;; seagreenless (mostly monochrome seagreen, looks nice)
+;; nordless (nord but less)
+;; nofrills-darkless (purple, highlighted strings)
+;; einkless (e-ink style :D)
+;; darkless (like tao-yin but with string highlighting)
+;; broceliande (neon teal 'less' theme with highlighted strings)
+
+(setq doom-theme 'modus-operandi)
 
 ;; Font
 ;; (setq doom-font (font-spec :family "Aporetic Serif Mono" :size 10))
@@ -80,22 +144,22 @@
   (setq vterm-shell "/sbin/fish"))
 
 ;; Themeing
-;(defvar my/theme-file (expand-file-name "last-theme.el" doom-user-dir)
-;  "File to store the last used theme.")
-;
+                                        ;(defvar my/theme-file (expand-file-name "last-theme.el" doom-user-dir)
+                                        ;  "File to store the last used theme.")
+                                        ;
 ;;; Function to save current theme
-;(defun my/save-current-theme ()
-;  "Save the current doom-theme as the last used theme."
-;  (when (and doom-theme (not (eq doom-theme 'user)))
-;    (with-temp-file my/theme-file
-;      (insert (format "(setq doom-theme '%s)" doom-theme)))))
-;
+                                        ;(defun my/save-current-theme ()
+                                        ;  "Save the current doom-theme as the last used theme."
+                                        ;  (when (and doom-theme (not (eq doom-theme 'user)))
+                                        ;    (with-temp-file my/theme-file
+                                        ;      (insert (format "(setq doom-theme '%s)" doom-theme)))))
+                                        ;
 ;;; Add our save function to doom-load-theme-hook
-;(add-hook 'doom-load-theme-hook #'my/save-current-theme)
-;
+                                        ;(add-hook 'doom-load-theme-hook #'my/save-current-theme)
+                                        ;
 ;;; Load the saved theme file on startup if it exists
-;(when (file-exists-p my/theme-file)
-;  (load my/theme-file nil t))
+                                        ;(when (file-exists-p my/theme-file)
+                                        ;  (load my/theme-file nil t))
 
 ;; Evil mode
 (after! evil
@@ -119,7 +183,7 @@
 (setq org-directory "~/org/")
 
 (after! org
-  (setq org-agenda-files '("~/code/" "~/org/"))
+  (setq org-agenda-files '("~/code/" "~/org/" "~/org/roam/daily"))
   (setq org-log-done 'time)
 
   ;; Demote highlighted headings
@@ -135,15 +199,27 @@
         :desc "Promote heading" "<" #'my/org-do-promote)
   )
 
+(after! org-modern
+  (global-org-modern-mode))
+
 ;; Org mode - PDF
 (save-place-mode 1)
 
 
-(setq org-capture-templates
-      '(("j" "Journal Entry" entry
-         (file+datetree "~/org/journal.org")
-         "* Entry %T\n** Mood\n** Events\n** Work\n** Future Plans\n"
-         :empty-lines 1)))
+(after! org-roam
+  :config
+  (setq org-roam-capture-templates
+        '(("d" "default" plain
+           "%?"
+           :if-new (file+head "%<%Y%m%d%H%M%S>-${slug}.org" "#+title: ${title}\n")
+           :unnarrowed t)
+          ("m" "Mood entry" plain
+           "%?"
+           :if-new (file+head "moods/%<%Y-%m-%d %H-%M>.org" "#+title: Mood log %<%Y-%m-%d %H:%M>\n\n* Mood\n\n* Context")
+           :unnarrowed t
+           :prepend t
+           :node-property "MOOD" "%^{Mood|Happy|Sad|Neutral|Angry|Anxious|Excited}"
+           :immediate-finish t))))
 
 ;; Configure org-mode to use pdf-tools for PDFs
 ;; (after! org
@@ -204,3 +280,6 @@
                                         ;(add-hook 'doom-load-theme-hook #'theme-magic-and-pywal)
 ;; (after! lsp-mode
 ;;   (setq lsp-clients-typescript-server-args '("--stdio")))
+
+
+(add-hook 'vue-mode-hook #'lsp!)
