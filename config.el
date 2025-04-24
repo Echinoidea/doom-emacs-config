@@ -27,6 +27,7 @@
 ;; (setq doom-font (font-spec :family "ZedMono Nerd Font" :size 12))
 ;; (setq doom-font (font-spec :family "Hack Nerd Font Propo" :size 12))
 (setq doom-font (font-spec :family "GoMono Nerd Font" :size 12))
+(setq fancy-splash-image "/home/gabriel/xfce/95-small.jpg")
 
 ;; (setq doom-font (font-spec :family "" :size 11 :weight 'light))
 ;;      doom-variable-pitch-font (font-spec :family "Fira Sans" :size 13))
