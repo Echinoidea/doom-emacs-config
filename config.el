@@ -26,8 +26,158 @@
 ;; (setq doom-font (font-spec :family "CozetteCrossedSevenVector" :size 20 ))
 ;; (setq doom-font (font-spec :family "ZedMono Nerd Font" :size 12))
 ;; (setq doom-font (font-spec :family "Hack Nerd Font Propo" :size 12))
-(setq doom-font (font-spec :family "GoMono Nerd Font" :size 12))
-(setq fancy-splash-image "/home/gabriel/xfce/95-small.jpg")
+
+
+;; (package! org :recipe
+;;   (:host nil :repo "https://git.tecosaur.net/mirrors/org-mode.git" :remote "mirror" :fork
+;;    (:host nil :repo "https://git.tecosaur.net/tec/org-mode.git" :branch "dev" :remote "tecosaur")
+;;    :files
+;;    (:defaults "etc")
+;;    :build t :pre-build
+;;    (with-temp-file "org-version.el"
+;;      (require 'lisp-mnt)
+;;      (let
+;;          ((version
+;;            (with-temp-buffer
+;;              (insert-file-contents "lisp/org.el")
+;;              (lm-header "version")))
+;;           (git-version
+;;            (string-trim
+;;             (with-temp-buffer
+;;               (call-process "git" nil t nil "rev-parse" "--short" "HEAD")
+;;               (buffer-string)))))
+;;        (insert
+;;         (format "(defun org-release () \"The release version of Org.\" %S)\n" version)
+;;         (format "(defun org-git-version () \"The truncate git commit hash of Org mode.\" %S)\n" git-version)
+;;         "(provide 'org-version)\n"))))
+;;   :pin nil)
+
+;; (unpin! org)
+
+;; Disable savehist mode because it is causing CPU consumption
+(savehist-mode -1)
+
+(setq evil-escape-key-sequence "jk")
+
+(setq doom-font (font-spec :family "AporeticSansMono Nerd Font" :size 14)
+      doom-serif-font (font-spec :family "GoMono Nerd Font" :size 14)
+      doom-variable-pitch-font (font-spec :family "Latin Modern Roman" :size 12))
+
+
+
+;; Enable diagnostics popups
+(after! flycheck
+  (add-hook `flycheck-mode-hook #'flycheck-popup-tip-mode))
+
+(after! gptel
+  (setq gptel-default-mode 'org-mode))
+
+(add-hook 'org-mode-hook 'turn-on-org-cdlatex)
+
+;; (setq fancy-splash-image "/home/gabriel/xfce/95-small.jpg")
+
+                                        ; (add-to-list 'default-frame-alist '(width . 100))
+                                        ; (add-to-list 'default-frame-alist '(height . 40))
+                                        ;
+
+(setq org-drill-learn-fraction 0.4)
+
+(setq frame-title-format
+      '(""
+        (:eval
+         (if (s-contains-p org-roam-directory (or buffer-file-name ""))
+             (replace-regexp-in-string
+              ".*/[0-9]*-?" "☰ "
+              (subst-char-in-string ?_ ?  buffer-file-name))
+           "%b"))
+        (:eval
+         (let ((project-name (projectile-project-name)))
+           (unless (string= "-" project-name)
+             (format (if (buffer-modified-p)  " ◉ %s" " ● %s") project-name))))))
+                                        ;
+(after! doom-modeline
+  (setq doom-modeline-buffer-file-name-style 'file-name
+        doom-modeline-always-show-macro-register t
+        doom-modeline-enable-word-count nil
+        doom-modeline-buffer-encoding t
+        doom-modeline-major-mode-icon t
+        doom-modeline-bar-width 0
+        doom-modeline-height 25
+        doom-modeline-modal nil))
+
+(defadvice! doom-modeline--buffer-file-name-roam-aware-a (orig-fun)
+  :around #'doom-modeline-buffer-file-name ; takes no args
+  (if (string-match-p (regexp-quote org-roam-directory) (or buffer-file-name ""))
+      (replace-regexp-in-string
+       "\\(?:^\\|.*/\\)\\([0-9]\\{4\\}\\)\\([0-9]\\{2\\}\\)\\([0-9]\\{2\\}\\)[0-9]*-"
+       "(\\1-\\2-\\3) "
+       (subst-char-in-string ?_ ?  buffer-file-name))
+    (funcall orig-fun)))
+
+(defadvice! +org-indent--reduced-text-prefixes ()
+  :after #'org-indent--compute-prefixes
+  (setq org-indent--text-line-prefixes
+        (make-vector org-indent--deepest-level nil))
+  (when (> org-indent-indentation-per-level 0)
+    (dotimes (n org-indent--deepest-level)
+      (aset org-indent--text-line-prefixes
+            n
+            (org-add-props
+                (concat (make-string (* n (1- org-indent-indentation-per-level))
+                                     ?\s)
+                        (if (> n 0)
+                            (char-to-string org-indent-boundary-char)
+                          "\u200b"))
+                nil 'face 'org-indent)))))
+
+(use-package! spacious-padding
+  :ensure t
+  :config
+  (setq spacious-padding-widths
+        '( :internal-border-width 15
+           :header-line-width 4
+           :mode-line-width 4
+           :tab-width 4
+           :right-divider-width 30
+           :scroll-bar-width 8
+           :fringe-width 0))
+  (spacious-padding-mode 1))
+
+(after! cdlatex
+  (map! :map cdlatex-mode-map
+        :i "TAB" #'cdlatex-tab)
+
+  (setq cdlatex-math-symbol-alist ; expand when prefixed with `
+        '((?e ("\\varepsilon" "\\epsilon"))
+          (?f ("\\varphi" "\\phi"))
+          (?0 ("\\varnothing" "\\emptyset"))
+          (?> ("\\to" "\\implies"))
+          (?= ("\\iff" "\\equiv"))
+          (?| ("\\mid" "\\vert"))
+          (?: ("\\coloneqq")))
+        cdlatex-math-modify-alist ; modify text with '
+        ;; key mathcmd textcmd type rmdot it
+        '((?b "\\mathbb" nil t nil nil)
+          (?c "\\mathcal" nil t nil nil)
+          (?f "\\mathbf" nil t nil nil)
+          (?m "\\mathrm" nil t nil nil)
+          (?r "\\mathrel" nil t nil nil)
+          (?s "\\mathsf" nil t nil nil)
+          (?o "\\operatorname" nil t nil nil))
+        cdlatex-command-alist ; expand with <TAB>
+        ;; keyword docstring replace hook args textflag mathflag
+        '(("eqn" "Insert an EQUATION* environment template" "" cdlatex-environment ("equation*") t nil)
+          ("aln" "Insert an ALIGN* environment template" "" cdlatex-environment ("align*") t nil)
+          ("sum" "Insert \\sum\\limits_{}^{}" "\\sum\\limits_{?}^{}" cdlatex-position-cursor nil nil t)
+          ("prod" "Insert \\prod\\limits_{}^{}" "\\prod\\limits_{?}^{}" cdlatex-position-cursor nil nil t)
+          ("bun" "Insert \\bigcup\\limits_{}^{}" "\\bigcup\\limits_{?}^{}" cdlatex-position-cursor nil nil t)
+          ("bin" "Insert \\bigcap\\limits_{}^{}" "\\bigcap\\limits_{?}^{}" cdlatex-position-cursor nil nil t)
+          ("lim" "Insert \\lim_\\limits{{} \to {}}" "\\lim_\\limits{{?} \to {}}" cdlatex-position-cursor nil nil t)
+          ("sr" "Insert {}^2" "{?}^2" cdlatex-position-cursor nil nil t)
+          ("cb" "Insert {}^3" "{?}^3" cdlatex-position-cursor nil nil t)
+
+          ("op" "Insert \\operatorname{}()" "\\operatorname{?}()" cdlatex-position-cursor nil nil t))))
+
 
 ;; (setq doom-font (font-spec :family "" :size 11 :weight 'light))
 ;;      doom-variable-pitch-font (font-spec :family "Fira Sans" :size 13))
@@ -98,8 +248,7 @@
 ;; darkless (like tao-yin but with string highlighting)
 ;; broceliande (neon teal 'less' theme with highlighted strings)
 
-(setq doom-theme 'modus-operandi)
-
+(setq doom-theme 'doom-gruvbox)
 ;; Font
 ;; (setq doom-font (font-spec :family "Aporetic Serif Mono" :size 10))
 
@@ -200,27 +349,45 @@
         :desc "Promote heading" "<" #'my/org-do-promote)
   )
 
-(after! org-modern
-  (global-org-modern-mode))
+(with-eval-after-load 'org (global-org-modern-mode))
+
+;; Editor
+
+;; (evil-global-set-key 'normal "g k" 'evil-previous-visual-line)
+;; (evil-global-set-key 'normal "g j" 'evil-next-visual-line)
+
+
+;; (add-hook! org-mode-hook
+;;   (map! :n "k" #'evil-previous-visual-line
+;;         :n "j" #'evil-next-visual-line
+;;         :n "g k" #'org-forward-element
+;;         :n "g j" #'org-backward-element
+;;         )
+;;   )
+
+(after! biblio
+  (setq org-cite-global-bibliography '("~/org/references.bib"))
+  )
+
 
 ;; Org mode - PDF
 (save-place-mode 1)
 
 
-(after! org-roam
-  :config
-  (setq org-roam-capture-templates
-        '(("d" "default" plain
-           "%?"
-           :if-new (file+head "%<%Y%m%d%H%M%S>-${slug}.org" "#+title: ${title}\n")
-           :unnarrowed t)
-          ("m" "Mood entry" plain
-           "%?"
-           :if-new (file+head "moods/%<%Y-%m-%d %H-%M>.org" "#+title: Mood log %<%Y-%m-%d %H:%M>\n\n* Mood\n\n* Context")
-           :unnarrowed t
-           :prepend t
-           :node-property "MOOD" "%^{Mood|Happy|Sad|Neutral|Angry|Anxious|Excited}"
-           :immediate-finish t))))
+;; (after! org-roam
+;;   :config
+;;   (setq org-roam-capture-templates
+;;         '(("d" "default" plain
+;;            "%?"
+;;            :if-new (file+head "%<%Y%m%d%H%M%S>-${slug}.org" "#+title: ${title}\n")
+;;            :unnarrowed t)
+;;           ("m" "Mood entry" plain
+;;            "%?"
+;;            :if-new (file+head "moods/%<%Y-%m-%d %H-%M>.org" "#+title: Mood log %<%Y-%m-%d %H:%M>\n\n* Mood\n\n* Context")
+;;            :unnarrowed t
+;;            :prepend t
+;;            :node-property "MOOD" "%^{Mood|Happy|Sad|Neutral|Angry|Anxious|Excited}"
+;;            :immediate-finish t))))
 
 ;; Configure org-mode to use pdf-tools for PDFs
 ;; (after! org
@@ -259,6 +426,9 @@
 
 (setq lsp-clients-typescript-server "/sbin/typescript-language-server")
 (setq lsp-clients-typescript-server-args '("--stdio" "--tsserver-path" "/sbin/tsserver"))
+
+(org-babel-do-load-languages
+ 'org-babel-load-languages '((C . t)))
 
 
 ;; (use-package! lsp-tailwindcss :after lsp-mode)

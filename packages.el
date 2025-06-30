@@ -70,75 +70,65 @@
 
 ;; Visuals
 ;; (package! beacon)
-(package! solaire-mode)
+; (package! solaire-mode)
 
 ;; Themes
 ;; (package! builtin-package :disable t)
 (package! doom-theme :disable t)
 
-(package! organic-green-theme)
-(package! soothe-theme)
-(package! cherry-blossom-theme)
-(package! espresso-theme)
-(package! hc-zenburn-theme)
-(package! jazz-theme)
-(package! afternoon-theme)
-(package! anti-zenburn-theme)
+; (package! organic-green-theme)
+; (package! soothe-theme)
+; (package! cherry-blossom-theme)
+; (package! espresso-theme)
+; (package! hc-zenburn-theme)
+; (package! jazz-theme)
+; (package! afternoon-theme)
+; (package! anti-zenburn-theme)
 (package! sublime-themes)
-(package! darktooth-theme)
+; (package! darktooth-theme)
 (package! tao-theme)
 (package! kaolin-themes)
-(package! apropospriate-theme)
-(package! ample-theme)
-(package! moe-theme)
-(package! amber-glow-theme)
-(package! berry-theme)
-(package! ember-twilight-theme)
-(package! roseline-theme)
-(package! solarized-gruvbox-theme)
-(package! stimmung-themes)
-(package! naysayer-theme)
+; (package! apropospriate-theme)
+; (package! ample-theme)
+; (package! moe-theme)
+; (package! amber-glow-theme)
+; (package! berry-theme)
+; (package! ember-twilight-theme)
+; (package! roseline-theme)
+; (package! solarized-gruvbox-theme)
+; (package! stimmung-themes)
+; (package! naysayer-theme)
 (package! ef-themes)
 (package! almost-mono-themes)
-(package! badwolf-theme)
-(package! birds-of-paradise-plus-theme)
-(package! brutalist-theme)
-(package! clues-theme)
-(package! creamsody-theme)
-(package! phoenix-dark-pink-theme)
-(package! eziam-themes)
-(package! faff-theme)
-(package! forest-blue-theme)
-(package! gotham-theme)
+; (package! badwolf-theme)
+; (package! birds-of-paradise-plus-theme)
+; (package! brutalist-theme)
+; (package! clues-theme)
+; (package! creamsody-theme)
+; (package! phoenix-dark-pink-theme)
+; (package! eziam-themes)
+; (package! faff-theme)
+; (package! forest-blue-theme)
+; (package! gotham-theme)
 ;; (package! green-phoshor-theme)
-(package! inkpot-theme)
-(package! lavender-theme)
-(package! laguna-theme)
-(package! metalheart-theme)
-(package! naga-theme)
-(package! nordic-night-theme)
+; (package! inkpot-theme)
+; (package! lavender-theme)
+; (package! laguna-theme)
+; (package! metalheart-theme)
+; (package! naga-theme)
+; (package! nordic-night-theme)
 ;; (package! old-lace-theme)
-(package! slime-theme)
+; (package! slime-theme)
 (package! soft-stone-theme)
 ;; (package! spike-theme)
 (package! srcery-theme)
-(package! sunburn-theme)
-(package! suscolors-theme)
-(package! toxi-theme)
-(package! tron-legacy-theme)
-(package! warm-night-theme)
-(package! purple-haze-theme)
+; (package! sunburn-theme)
+; (package! suscolors-theme)
+; (package! toxi-theme)
+; (package! tron-legacy-theme)
+; (package! warm-night-theme)
+; (package! purple-haze-theme)
 (package! xresources-theme)
-;; (package! nofrills-themes)
-
-;; Use this for non MELPA themes
-(package! retro-orange-theme
-  :recipe (:host github :repo "emacs-jp/replace-colorthemes"
-           :files ("retro-orange-theme.el")))
-
-(package! naga-blue-theme
-  :recipe (:host github :repo "amolv06/naga-blue"
-           :files ("naga-blue-theme.el")))
 
 (package! colorless-themes
   :recipe (:host nil :repo "https://git.sr.ht/~lthms/colorless-themes.el"
@@ -150,17 +140,32 @@
            :files ("*.el")
            ))
 
-(package! green-is-the-new-black
-  :recipe (:host nil :repo "https://github.com/fredcamps/green-is-the-new-black-emacs"
-           :files ("*.el")
-           ))
-
-
-(package! future-green-theme
-  :recipe (:host nil :repo "https://github.com/Echinoidea/future-green-theme.el"
-           :files ("*.el")
-           ))
-
-(package! ewal)
 
 (package! vue-mode)
+
+(package! kanagawa
+  :recipe (:host nil :repo "https://github.com/Fabiokleis/kanagawa-emacs"
+           :files ("*.el")
+           ))
+
+(package! catppuccin-theme)
+
+(package! kuronami-theme)
+
+(package! inkpot-theme)
+
+(package! spacious-padding)
+
+(package! doric-themes)
+
+(package! standard-themes)
+
+(package! olivetti-mode
+  :recipe (:host nil :repo "https://github.com/rnkn/olivetti"
+           :files ("*.el")
+           ))
+
+(package! doom-two-tone-themes
+  :recipe (:host github
+           :repo "eliraz-refael/doom-two-tone-themes"
+           :files ("doom-two-tone-themes.el" "themes/*.el")))
