@@ -3,7 +3,6 @@
 ;; Place your private configuration here! Remember, you do not need to run 'doom
 ;; sync' after modifying this file!
 
-
 ;; Some functionality uses this to identify you, e.g. GPG configuration, email
 ;; clients, file templates and snippets. It is optional.
 ;; (setq user-full-name "John Doe"
@@ -20,39 +19,7 @@
 ;;
 ;; See 'C-h v doom-font' for documentation and more examples of what they
 ;; accept. For example:
-;;
-;; (setq doom-font (font-spec :family "ProggyClean Nerd Font Mono" :size 14))
-;; (setq doom-font (font-spec :family "Kirsch Nerd Font Mono" :size 20 ))
-;; (setq doom-font (font-spec :family "CozetteCrossedSevenVector" :size 20 ))
-;; (setq doom-font (font-spec :family "ZedMono Nerd Font" :size 12))
-;; (setq doom-font (font-spec :family "Hack Nerd Font Propo" :size 12))
 
-
-;; (package! org :recipe
-;;   (:host nil :repo "https://git.tecosaur.net/mirrors/org-mode.git" :remote "mirror" :fork
-;;    (:host nil :repo "https://git.tecosaur.net/tec/org-mode.git" :branch "dev" :remote "tecosaur")
-;;    :files
-;;    (:defaults "etc")
-;;    :build t :pre-build
-;;    (with-temp-file "org-version.el"
-;;      (require 'lisp-mnt)
-;;      (let
-;;          ((version
-;;            (with-temp-buffer
-;;              (insert-file-contents "lisp/org.el")
-;;              (lm-header "version")))
-;;           (git-version
-;;            (string-trim
-;;             (with-temp-buffer
-;;               (call-process "git" nil t nil "rev-parse" "--short" "HEAD")
-;;               (buffer-string)))))
-;;        (insert
-;;         (format "(defun org-release () \"The release version of Org.\" %S)\n" version)
-;;         (format "(defun org-git-version () \"The truncate git commit hash of Org mode.\" %S)\n" git-version)
-;;         "(provide 'org-version)\n"))))
-;;   :pin nil)
-
-;; (unpin! org)
 
 ;; Disable savehist mode because it is causing CPU consumption
 (savehist-mode -1)
@@ -63,11 +30,18 @@
       doom-serif-font (font-spec :family "GoMono Nerd Font" :size 14)
       doom-variable-pitch-font (font-spec :family "Latin Modern Roman" :size 12))
 
+(after! writeroom-mode
+  (setq +zen-text-scale 0
+        +zen-mixed-pitch-modes nil
+        writeroom-mode-line t
+        writeroom-width 160))
 
+(after! treemacs
+  (treemacs-tag-follow-mode 1))
 
 ;; Enable diagnostics popups
 (after! flycheck
-  (add-hook `flycheck-mode-hook #'flycheck-popup-tip-mode))
+  (add-hook 'flycheck-mode-hook #'flycheck-popup-tip-mode))
 
 (after! gptel
   (setq gptel-default-mode 'org-mode))
@@ -79,8 +53,6 @@
                                         ; (add-to-list 'default-frame-alist '(width . 100))
                                         ; (add-to-list 'default-frame-alist '(height . 40))
                                         ;
-
-(setq org-drill-learn-fraction 0.4)
 
 (setq frame-title-format
       '(""
@@ -192,63 +164,7 @@
 ;; `load-theme' function. This is the default:
 
 
-;; Favorite themes:
-;; modus-operandi-tinted
-;; purple-haze
-;; naga-blue
-;; tron-legacy
-;; sus-colors (Makes heading font sizes too big though)
-;; srcery (gruvbox but kinda nicer)
-;; phoenix-dark-pink
-;; ef-winter
-;; tao-yin
-;; ef-spring
-;; ef-symbiosis
-;; ef-summer
-;; ef-reverie
-;; ef-owl
-;; ef-night
-;; ef-dark
-;; ef-maris-dark
-;; ef-kassio
-;; ef-elea-dark
-;; ef-eagle
-;; ef-duo-dark
-;; ef-dream
-;; ef-day
-;; ef-cyprus
-;; ef-cherie
-;; ef-bio
-;; ef-autumn
-;; ef-arbutus
-;; wilson
-;; ritchie (light and blue)
-;; afternoon
-;; jazz (really muted gruvboxy)
-;; soothe (default, darker, and obsidian )(keywords are highlighted softly which is interesting)
-;; organic-green (w98 vibes with light green)
-;; doom-winter-is-coming-light (nice bright snowy colors, good on shitty monitor)
-;; doom-wilmersdorf (kinda like nord but evil)
-;; doom-tomorrow-night (very profesional and slightly muted)
-;; doom-tomorrow-day (good pure white light theme)
-;; doom-sourcerer (nice greens in Rust, nice bg)
-;; doom-rouge (good, slightly blue, good on bad monitor)
-;; doom-plain-dark and plain, compare with tao-yin and tao-yang
-;; doom-pine (really green and gruvboxy)
-;; doom-miramare
-;; doom-meltbus (underline instead of cursorline highlight)
-;; doom-lantern (muted red)
-;; doom-ir-black (solid black theme)
-;; doom-flatwhite (certain keywords and strings are highlighted which is actually really nice on a light theme)
-;; doom-earl-grey
-;; seagreenless (mostly monochrome seagreen, looks nice)
-;; nordless (nord but less)
-;; nofrills-darkless (purple, highlighted strings)
-;; einkless (e-ink style :D)
-;; darkless (like tao-yin but with string highlighting)
-;; broceliande (neon teal 'less' theme with highlighted strings)
-
-(setq doom-theme 'doom-gruvbox)
+(setq doom-theme 'doom-cyan-charcoal)
 ;; Font
 ;; (setq doom-font (font-spec :family "Aporetic Serif Mono" :size 10))
 
@@ -293,23 +209,6 @@
 (after! vterm
   (setq vterm-shell "/sbin/fish"))
 
-;; Themeing
-                                        ;(defvar my/theme-file (expand-file-name "last-theme.el" doom-user-dir)
-                                        ;  "File to store the last used theme.")
-                                        ;
-;;; Function to save current theme
-                                        ;(defun my/save-current-theme ()
-                                        ;  "Save the current doom-theme as the last used theme."
-                                        ;  (when (and doom-theme (not (eq doom-theme 'user)))
-                                        ;    (with-temp-file my/theme-file
-                                        ;      (insert (format "(setq doom-theme '%s)" doom-theme)))))
-                                        ;
-;;; Add our save function to doom-load-theme-hook
-                                        ;(add-hook 'doom-load-theme-hook #'my/save-current-theme)
-                                        ;
-;;; Load the saved theme file on startup if it exists
-                                        ;(when (file-exists-p my/theme-file)
-                                        ;  (load my/theme-file nil t))
 
 ;; Evil mode
 (after! evil
@@ -351,20 +250,6 @@
 
 (with-eval-after-load 'org (global-org-modern-mode))
 
-;; Editor
-
-;; (evil-global-set-key 'normal "g k" 'evil-previous-visual-line)
-;; (evil-global-set-key 'normal "g j" 'evil-next-visual-line)
-
-
-;; (add-hook! org-mode-hook
-;;   (map! :n "k" #'evil-previous-visual-line
-;;         :n "j" #'evil-next-visual-line
-;;         :n "g k" #'org-forward-element
-;;         :n "g j" #'org-backward-element
-;;         )
-;;   )
-
 (after! biblio
   (setq org-cite-global-bibliography '("~/org/references.bib"))
   )
@@ -373,27 +258,7 @@
 ;; Org mode - PDF
 (save-place-mode 1)
 
-
-;; (after! org-roam
-;;   :config
-;;   (setq org-roam-capture-templates
-;;         '(("d" "default" plain
-;;            "%?"
-;;            :if-new (file+head "%<%Y%m%d%H%M%S>-${slug}.org" "#+title: ${title}\n")
-;;            :unnarrowed t)
-;;           ("m" "Mood entry" plain
-;;            "%?"
-;;            :if-new (file+head "moods/%<%Y-%m-%d %H-%M>.org" "#+title: Mood log %<%Y-%m-%d %H:%M>\n\n* Mood\n\n* Context")
-;;            :unnarrowed t
-;;            :prepend t
-;;            :node-property "MOOD" "%^{Mood|Happy|Sad|Neutral|Angry|Anxious|Excited}"
-;;            :immediate-finish t))))
-
-;; Configure org-mode to use pdf-tools for PDFs
-;; (after! org
-;;   (push '("\\.pdf\\'" . pdf-view-mode) org-file-apps)
-;;   (add-to-list 'org-file-apps '("\\.pdf::\\([0-9]+\\)\\'" . pdf-view-mode))
-;;   (add-to-list 'org-file-apps '("\\.pdf::\\([0-9]+\\)\\'" . pdf-view-mode)))
+(setq auth-sources '("~/.authinfo.gpg"))
 
 ;; GPTel
 (use-package! gptel
@@ -429,28 +294,5 @@
 
 (org-babel-do-load-languages
  'org-babel-load-languages '((C . t)))
-
-
-;; (use-package! lsp-tailwindcss :after lsp-mode)
-
-
-                                        ;(defun run-pywal-after-theme-switch ()
-                                        ;  "Run the shell script that updates Pywal from cache."
-                                        ;  (let ((script-path (expand-file-name "~/.config/polybar/hack/scripts/pywal-from-cache.sh")))
-                                        ;    (when (file-executable-p script-path) ; Check if the script is executable
-                                        ;      (shell-command script-path)))
-                                        ;  (let ((script-path (expand-file-name "~/.config/polybar/hack/launch.sh")))
-                                        ;    (when (file-executable-p script-path) ; Check if the script is executable
-                                        ;      (shell-command script-path))))
-                                        ;
-                                        ;(defun theme-magic-and-pywal ()
-                                        ;  "Run theme-magic and then update pywal from cache."
-                                        ;  (theme-magic-from-emacs)
-                                        ;  (run-pywal-after-theme-switch))
-                                        ;
-                                        ;(add-hook 'doom-load-theme-hook #'theme-magic-and-pywal)
-;; (after! lsp-mode
-;;   (setq lsp-clients-typescript-server-args '("--stdio")))
-
 
 (add-hook 'vue-mode-hook #'lsp!)
