@@ -102,18 +102,18 @@
                           "\u200b"))
                 nil 'face 'org-indent)))))
 
-(use-package! spacious-padding
-  :ensure t
-  :config
-  (setq spacious-padding-widths
-        '( :internal-border-width 15
-           :header-line-width 4
-           :mode-line-width 4
-           :tab-width 4
-           :right-divider-width 30
-           :scroll-bar-width 8
-           :fringe-width 0))
-  (spacious-padding-mode 1))
+;; (use-package! spacious-padding
+;;   :ensure t
+;;   :config
+;;   (setq spacious-padding-widths
+;;         '( :internal-border-width 15
+;;            :header-line-width 4
+;;            :mode-line-width 4
+;;            :tab-width 4
+;;            :right-divider-width 30
+;;            :scroll-bar-width 8
+;;            :fringe-width 0))
+;;   (spacious-padding-mode nil))
 
 (after! cdlatex
   (map! :map cdlatex-mode-map
@@ -164,7 +164,7 @@
 ;; `load-theme' function. This is the default:
 
 
-(setq doom-theme 'doom-cyan-charcoal)
+(setq doom-theme 'kaolin-dark)
 ;; Font
 ;; (setq doom-font (font-spec :family "Aporetic Serif Mono" :size 10))
 
@@ -272,6 +272,12 @@
   (setq gptel-model 'gpt-4o))
 
 (after! gptel
+  (gptel-make-ollama "Ollama"
+    :host "172.16.108.90:11434"
+    :stream t
+    :models '(gemma3:1b gemma3 codellama llama2-uncensored llava)))
+
+(after! gptel
   (map! :leader
         :prefix "l"
         :desc "GPTel Open Buffer" "b" #'gptel
@@ -286,7 +292,8 @@
 (after! rustic
   (setq rustic-lsp-server 'rust-analyzer)
   (setq rustic-format-on-save t)
-  (setq rustic-format-display-buffer nil))
+  (setq rustic-format-display-buffer nil)
+  (setq lsp-inlay-hints-mode t))
 
 
 (setq lsp-clients-typescript-server "/sbin/typescript-language-server")
@@ -296,3 +303,142 @@
  'org-babel-load-languages '((C . t)))
 
 (add-hook 'vue-mode-hook #'lsp!)
+
+(after! treemacs
+  (setq treemacs-indent-guide-mode t))
+
+;; Org roam node to quartz 4 content to digital-garden
+(defun org-roam-export-to-quartz ()
+  "Export current org-roam buffer to Quartz 4 formatted markdown."
+  (interactive)
+  (unless (derived-mode-p 'org-mode)
+    (error "This function can only be called from an org-mode buffer"))
+
+  (let* ((node (org-roam-node-at-point))
+         (title (or (org-roam-node-title node)
+                    (file-name-sans-extension (file-name-nondirectory buffer-file-name))))
+         (tags (org-roam-node-tags node))
+         (content (org-roam--export-content-to-markdown))
+         (filename (org-roam--sanitize-filename title))
+         (output-dir "~/code/web/digital-garden/content/")
+         (output-file (expand-file-name (concat filename ".md") output-dir)))
+
+    ;; Ensure output directory exists
+    (unless (file-directory-p output-dir)
+      (make-directory output-dir t))
+
+    ;; Write the formatted markdown file
+    (with-temp-file output-file
+      (insert (org-roam--format-quartz-frontmatter title tags))
+      (insert "\n")
+      (insert content))
+
+    (message "Exported to: %s" output-file)))
+
+(defun org-roam--export-content-to-markdown ()
+  "Export the content of current org buffer to markdown."
+  (save-excursion
+    (goto-char (point-min))
+    ;; Skip past any org-mode metadata/properties
+    (when (re-search-forward "^\\*\\|^[^#:].*$" nil t)
+      (beginning-of-line)
+      (let ((content-start (point)))
+        (org-export-as 'md nil nil nil '(:with-toc nil :with-tags nil))))))
+
+(defun org-roam--format-quartz-frontmatter (title tags)
+  "Format the YAML frontmatter for Quartz 4."
+  (let ((frontmatter "---\n")
+        (yaml-title (format "title: %s\n" title))
+        (yaml-draft "draft: false\n")
+        (yaml-tags (if tags
+                       (concat "tags:\n"
+                               (mapconcat (lambda (tag)
+                                            (format "  - %s" tag))
+                                          tags "\n") "\n")
+                     "")))
+    (concat frontmatter yaml-title yaml-draft yaml-tags "---\n")))
+
+(defun org-roam--sanitize-filename (title)
+  "Sanitize title for use as filename."
+  (let ((clean-title (replace-regexp-in-string "[^a-zA-Z0-9-_\\. ]" "" title)))
+    (replace-regexp-in-string "\\s-+" "-" clean-title)))
+
+;; Alternative version that uses org-export-as directly
+(defun org-roam-export-to-quartz-alt ()
+  "Alternative export function using org-export-as directly."
+  (interactive)
+  (unless (derived-mode-p 'org-mode)
+    (error "This function can only be called from an org-mode buffer"))
+
+  (let* ((node (org-roam-node-at-point))
+         (title (or (org-roam-node-title node)
+                    (file-name-sans-extension (file-name-nondirectory buffer-file-name))))
+         (tags (org-roam-node-tags node))
+         (filename (org-roam--sanitize-filename title))
+         (output-dir "~/code/web/digital-garden/content/")
+         (output-file (expand-file-name (concat filename ".md") output-dir)))
+
+    ;; Ensure output directory exists
+    (unless (file-directory-p output-dir)
+      (make-directory output-dir t))
+
+    ;; Export to markdown string
+    (let ((markdown-content (org-export-as 'md nil nil nil '(:with-toc nil :with-tags nil))))
+      (with-temp-file output-file
+        (insert (org-roam--format-quartz-frontmatter title tags))
+        (insert "\n")
+        (insert markdown-content)))
+
+    (message "Exported to: %s" output-file)))
+
+;; Keybinding suggestion (optional)
+;; (define-key org-mode-map (kbd "C-c C-e q") 'org-roam-export-to-quartz)
+
+(use-package! eaf
+  :load-path "~/.elisp/emacs-application-framework"
+  :init
+  :custom
+  (eaf-browser-continue-where-left-off t)
+  (eaf-browser-enable-adblocker t)
+  (browse-url-browser-function 'eaf-open-browser) ;; Make EAF Browser my default browser
+  :config
+  (defalias 'browse-web #'eaf-open-browser)
+
+  ;; (require 'eaf-file-manager)
+  ;; (require 'eaf-music-player)
+  ;; (require 'eaf-image-viewer)
+  ;; (require 'eaf-camera)
+  ;; (require 'eaf-demo)
+  ;; (require 'eaf-airshare)
+  ;; (require 'eaf-terminal)
+  ;; (require 'eaf-markdown-previewer)
+  ;; (require 'eaf-video-player)
+  ;; (require 'eaf-vue-demo)
+  ;; (require 'eaf-file-sender)
+  ;; (require 'eaf-pdf-viewer)
+  ;; (require 'eaf-mindmap)
+  ;; (require 'eaf-netease-cloud-music)
+  ;; (require 'eaf-jupyter)
+  ;; (require 'eaf-org-previewer)
+  ;; (require 'eaf-system-monitor)
+  ;; (require 'eaf-rss-reader)
+  ;; (require 'eaf-file-browser)
+  (require 'eaf-browser)
+  ;; (require 'eaf-org)
+  ;; (require 'eaf-mail)
+  ;; (require 'eaf-git)
+  (when (display-graphic-p)
+    (require 'eaf-all-the-icons))
+
+  (require 'eaf-evil)
+  (define-key key-translation-map (kbd "SPC")
+              (lambda (prompt)
+                (if (derived-mode-p 'eaf-mode)
+                    (pcase eaf--buffer-app-name
+                      ("browser" (if  (string= (eaf-call-sync "call_function" eaf--buffer-id "is_focus") "True")
+                                     (kbd "SPC")
+                                   (kbd eaf-evil-leader-key)))
+                      ("pdf-viewer" (kbd eaf-evil-leader-key))
+                      ("image-viewer" (kbd eaf-evil-leader-key))
+                      (_  (kbd "SPC")))
+                  (kbd "SPC")))))
