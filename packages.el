@@ -170,14 +170,13 @@
            :repo "eliraz-refael/doom-two-tone-themes"
            :files ("doom-two-tone-themes.el" "themes/*.el")))
 
-
-(package! flyover
-  :recipe (:host github
-           :repo "konrad1977/flyover"
-           :files ("flyover.el")))
+;; (package! flyover
+;;   :recipe (:host github
+;;            :repo "konrad1977/flyover"
+;;            :files ("flyover.el")))
 
 (package! indent-bars)
 
-(package! emacs-application-framework
-  :recipe (:host github :repo "manateelazycat/emacs-application-framework"
-           :files ("eaf.el" "src/lisp/*.el")))
+;; (package! emacs-application-framework
+;;   :recipe (:host github :repo "manateelazycat/emacs-application-framework"
+;;            :files ("eaf.el" "src/lisp/*.el")))
