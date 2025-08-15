@@ -28,8 +28,11 @@
 ;; Disable savehist mode because it is causing CPU consumption
 (savehist-mode -1)
 
+
 (after! vterm
   (setq vterm-shell "/sbin/fish"))
+
+
 
 ;; ┏━╸╻ ╻╻╻     ┏┳┓┏━┓╺┳┓┏━╸
 ;; ┣╸ ┃┏┛┃┃     ┃┃┃┃ ┃ ┃┃┣╸
@@ -38,11 +41,83 @@
 (setq evil-escape-key-sequence "jk")
 
 (after! evil
-  ;; Redefine 'o' and 'O' to not enter insert mode
+  ;; Redefine 'o' and 'o' to not enter insert mode
   (map! :map evil-normal-state-map
         "o" (cmd! (evil-open-below 1) (evil-normal-state))
         "O" (cmd! (evil-open-above 1) (evil-normal-state)))
+  (windmove-default-keybindings)
+
+  ;; CTRL + h/j/k/l for window navigation
+  (define-key evil-normal-state-map (kbd "C-h") 'windmove-left)
+  (define-key evil-normal-state-map (kbd "C-j") 'windmove-down)
+  (define-key evil-normal-state-map (kbd "C-k") 'windmove-up)
+  (define-key evil-normal-state-map (kbd "C-l") 'windmove-right)
+  (define-key evil-insert-state-map (kbd "C-h") 'windmove-left)
+  (define-key evil-insert-state-map (kbd "C-j") 'windmove-down)
+  (define-key evil-insert-state-map (kbd "C-k") 'windmove-up)
+  (define-key evil-insert-state-map (kbd "C-l") 'windmove-right)
+  (define-key evil-visual-state-map (kbd "C-h") 'windmove-left)
+  (define-key evil-visual-state-map (kbd "C-j") 'windmove-down)
+  (define-key evil-visual-state-map (kbd "C-k") 'windmove-up)
+  (define-key evil-visual-state-map (kbd "C-l") 'windmove-right)
   )
+
+(after! org
+  ;; Remove windmove bindings in org-mode
+  (define-key org-mode-map (kbd "S-<left>") 'org-shiftleft)
+  (define-key org-mode-map (kbd "S-<right>") 'org-shiftright)
+  (define-key org-mode-map (kbd "S-<up>") 'org-shiftup)
+  (define-key org-mode-map (kbd "S-<down>") 'org-shiftdown)
+
+  ;; Also override in evil states specifically for org-mode
+  (evil-define-key 'normal org-mode-map
+    (kbd "S-<left>") 'org-shiftleft
+    (kbd "S-<right>") 'org-shiftright
+    (kbd "S-<up>") 'org-shiftup
+    (kbd "S-<down>") 'org-shiftdown)
+
+  (evil-define-key 'insert org-mode-map
+    (kbd "S-<left>") 'org-shiftleft
+    (kbd "S-<right>") 'org-shiftright
+    (kbd "S-<up>") 'org-shiftup
+    (kbd "S-<down>") 'org-shiftdown))
+
+;; ┏━┓╻ ╻╻ ╻
+;; ┣━┫┃┏┛┗┳┛
+;; ╹ ╹┗┛  ╹
+;; Avy
+(map! :leader
+      (:prefix-map ("j" . "jump and edit")
+       :desc "goto char timer" "j" #'avy-goto-char-2
+       :desc "goto line" "l" #'avy-goto-line
+       :desc "goto word end" "w" #'avy-goto-word-1
+       :desc "goto word start" "b" #'avy-goto-word-0
+
+       (:prefix-map ("w" . "goto word")
+        :desc "goto word above" "k" #'avy-goto-word-0-above
+        :desc "goto word above" "j" #'avy-goto-word-0-below
+        )
+
+       (:prefix-map ("c" . "goto char")
+        :desc "goto single char" "c" #'avy-goto-char
+        :desc "goto double char" "d" #'avy-goto-char-2
+        :desc "")
+
+       (:prefix-map ("l" . "goto line")
+        :desc "goto line above" "k" #'avy-goto-line-above
+        :desc "goto line below" "j" #'avy-goto-line-below
+        )
+
+       ;; Sub-prefix for delete operations
+       (:prefix-map ("d" . "delete/kill")
+        :desc "kill region" "l" #'avy-kill-region
+        :desc "copy region" "w" #'avy-kill-ring-save-region
+        :desc "kill whole line" "r" #'avy-kill-whole-line)
+
+       ;; Another sub-prefix for copy operations
+       (:prefix-map ("x" . "copy")
+        :desc "copy line" "l" #'avy-copy-line
+        :desc "copy region" "r" #'avy-copy-region)))
 
 ;; ┏━┓┏━┓┏━┓┏━╸┏━┓┏━┓┏━┓┏┓╻┏━╸┏━╸
 ;; ┣━┫┣━┛┣━┛┣╸ ┣━┫┣┳┛┣━┫┃┗┫┃  ┣╸
@@ -50,7 +125,7 @@
 ;; Appearance
 ;;
 ;; Font
-(setq doom-font (font-spec :family "AporeticSansMono Nerd Font" :size 14)
+(setq doom-font (font-spec :family "Maple Mono" :size 14)
       doom-serif-font (font-spec :family "GoMono Nerd Font" :size 14)
       doom-variable-pitch-font (font-spec :family "Latin Modern Roman" :size 12))
 
@@ -82,11 +157,78 @@
 (setq doom-theme 'kaolin-dark)
 (setq display-line-numbers-type 'relative)
 
+;; Dashboard
+
+(defun my/set-fancy-splash-image-by-theme ()
+;;; Set doom fancy splash image for specific loaded themes,
+;;; if there is no corresponding image in $DOOM_DIR/splashes, load default doom ascii art
+  (let* ((theme-name (symbol-name (car custom-enabled-themes)))
+         (image-path (expand-file-name
+                      (format "~/.config/doom/splashes/%s.jpg" theme-name)))) ; Adjust path
+    (if (file-exists-p image-path)
+        (setq fancy-splash-image image-path)
+      (setq fancy-splash-image nil)))) ;; nil = fallback to Doom ASCII
+
+;; Set splash when theme is loaded
+(add-hook 'doom-load-theme-hook #'my/set-fancy-splash-image-by-theme)
+
+;; Handle daemon mode: wait until a frame is created
+(when (daemonp)
+  (add-hook 'after-make-frame-functions
+            (lambda (_frame)
+              (with-selected-frame _frame
+                (my/set-fancy-splash-image-by-theme))))
+  )
+
+;; For non-daemon mode, just call it directly
+(unless (daemonp)
+  (my/set-fancy-splash-image-by-theme))
+
 ;; ╻  ┏━┓┏━┓
 ;; ┃  ┗━┓┣━┛
 ;; ┗━╸┗━┛╹
 ;; LSP
-(setq lsp-auto-execute-action nil)
+(setq! lsp-auto-execute-action nil)
+
+(after! corfu
+  (setq! corfu-auto-delay 0.0)
+  )
+
+(add-to-list 'auto-mode-alist '("\\.tsx\\'" . typescript-tsx-mode))
+
+(after! typescript-mode
+  (add-hook 'typescript-tsx-mode-hook #'lsp!))
+
+(defun lsp-booster--advice-json-parse (old-fn &rest args)
+  "Try to parse bytecode instead of json."
+  (or
+   (when (equal (following-char) ?#)
+     (let ((bytecode (read (current-buffer))))
+       (when (byte-code-function-p bytecode)
+         (funcall bytecode))))
+   (apply old-fn args)))
+(advice-add (if (progn (require 'json)
+                       (fboundp 'json-parse-buffer))
+                'json-parse-buffer
+              'json-read)
+            :around
+            #'lsp-booster--advice-json-parse)
+
+(defun lsp-booster--advice-final-command (old-fn cmd &optional test?)
+  "Prepend emacs-lsp-booster command to lsp CMD."
+  (let ((orig-result (funcall old-fn cmd test?)))
+    (if (and (not test?)                             ;; for check lsp-server-present?
+             (not (file-remote-p default-directory)) ;; see lsp-resolve-final-command, it would add extra shell wrapper
+             lsp-use-plists
+             (not (functionp 'json-rpc-connection))  ;; native json-rpc
+             (executable-find "emacs-lsp-booster"))
+        (progn
+          (when-let ((command-from-exec-path (executable-find (car orig-result))))  ;; resolve command from exec-path (in case not found in $PATH)
+            (setcar orig-result command-from-exec-path))
+          (message "Using emacs-lsp-booster for %s!" orig-result)
+          (cons "emacs-lsp-booster" orig-result))
+      orig-result)))
+(advice-add 'lsp-resolve-final-command :around #'lsp-booster--advice-final-command)
 
 (after! rustic
   (setq rustic-lsp-server 'rust-analyzer)
@@ -95,9 +237,23 @@
   (setq lsp-inlay-hints-mode t))
 
 
-(setq lsp-clients-typescript-server "/sbin/typescript-language-server")
-(setq lsp-clients-typescript-server-args '("--stdio" "--tsserver-path" "/sbin/tsserver"))
+;; (setq lsp-clients-typescript-server "/usr/bin/typescript-language-server")
+;; (setq lsp-clients-typescript-server-args '("--stdio" "--tsserver-path" "/usr/bin/tsserver"))
 
+;; (require 'web-mode)
+;; (add-to-list 'auto-mode-alist '("\\.tsx\\'" . web-mode))
+;; (add-hook 'web-mode-hook
+;;           (lambda ()
+;;             (when (string-equal "tsx" (file-name-extension buffer-file-name))
+;;               (setup-tide-mode))))
+;; ;; enable typescript-tslint checker
+;; (flycheck-add-mode 'typescript-tslint 'web-mode)
+
+(setq tide-node-executable "/usr/bin/node")
+
+(use-package! lsp-bridge
+  :config
+  (global-lsp-bridge-mode))
 
 (add-hook 'vue-mode-hook #'lsp!)
 
@@ -111,6 +267,8 @@
 ;; Org Mode
 
 (add-hook 'org-mode-hook 'turn-on-org-cdlatex)
+
+(setq! doom-modeline-enable-word-count t)
 
 (setq frame-title-format
       '(""
@@ -230,6 +388,28 @@
         :desc "GPTel Rewrite" "r" #'gptel-rewrite
         ))
 
+(set-popup-rule! "^\\*eww\\*" :ignore t)
+
+;; ┏━╸╻ ╻╻ ╻
+;; ┣╸ ┃╻┃┃╻┃
+;; ┗━╸┗┻┛┗┻┛
+;; Eww
+
+;; Wrapper function to open eww in the current frame instead of popup
+(defun eww-open-in-frame (&optional url)
+  (interactive)
+  (set-popup-rule! "^\\*eww\\*" :ignore t)
+  (if url
+      (eww url)
+    (call-interactively #'eww))
+  )
+
+(set-popup-rule! "^\\*eww\\*"
+  :side 'right
+  :size 0.5
+  :quit nil
+  :ttl 0)
+
 
 ;; ┏━╸╻ ╻┏┓╻┏━╸╺┳╸╻┏━┓┏┓╻┏━┓
 ;; ┣╸ ┃ ┃┃┗┫┃   ┃ ┃┃ ┃┃┗┫┗━┓
@@ -237,88 +417,88 @@
 ;; Functions
 
 ;; Org roam node to quartz 4 content to digital-garden
-(defun org-roam-export-to-quartz ()
-  "Export current org-roam buffer to Quartz 4 formatted markdown."
-  (interactive)
-  (unless (derived-mode-p 'org-mode)
-    (error "This function can only be called from an org-mode buffer"))
+;; (defun org-roam-export-to-quartz ()
+;;   "Export current org-roam buffer to Quartz 4 formatted markdown."
+;;   (interactive)
+;;   (unless (derived-mode-p 'org-mode)
+;;     (error "This function can only be called from an org-mode buffer"))
 
-  (let* ((node (org-roam-node-at-point))
-         (title (or (org-roam-node-title node)
-                    (file-name-sans-extension (file-name-nondirectory buffer-file-name))))
-         (tags (org-roam-node-tags node))
-         (content (org-roam--export-content-to-markdown))
-         (filename (org-roam--sanitize-filename title))
-         (output-dir "~/code/web/digital-garden/content/")
-         (output-file (expand-file-name (concat filename ".md") output-dir)))
+;;   (let* ((node (org-roam-node-at-point))
+;;          (title (or (org-roam-node-title node)
+;;                     (file-name-sans-extension (file-name-nondirectory buffer-file-name))))
+;;          (tags (org-roam-node-tags node))
+;;          (content (org-roam--export-content-to-markdown))
+;;          (filename (org-roam--sanitize-filename title))
+;;          (output-dir "~/code/web/digital-garden/content/")
+;;          (output-file (expand-file-name (concat filename ".md") output-dir)))
 
-    ;; Ensure output directory exists
-    (unless (file-directory-p output-dir)
-      (make-directory output-dir t))
+;;     ;; Ensure output directory exists
+;;     (unless (file-directory-p output-dir)
+;;       (make-directory output-dir t))
 
-    ;; Write the formatted markdown file
-    (with-temp-file output-file
-      (insert (org-roam--format-quartz-frontmatter title tags))
-      (insert "\n")
-      (insert content))
+;;     ;; Write the formatted markdown file
+;;     (with-temp-file output-file
+;;       (insert (org-roam--format-quartz-frontmatter title tags))
+;;       (insert "\n")
+;;       (insert content))
 
-    (message "Exported to: %s" output-file)))
+;;     (message "Exported to: %s" output-file)))
 
-(defun org-roam--export-content-to-markdown ()
-  "Export the content of current org buffer to markdown."
-  (save-excursion
-    (goto-char (point-min))
-    ;; Skip past any org-mode metadata/properties
-    (when (re-search-forward "^\\*\\|^[^#:].*$" nil t)
-      (beginning-of-line)
-      (let ((content-start (point)))
-        (org-export-as 'md nil nil nil '(:with-toc nil :with-tags nil))))))
+;; (defun org-roam--export-content-to-markdown ()
+;;   "Export the content of current org buffer to markdown."
+;;   (save-excursion
+;;     (goto-char (point-min))
+;;     ;; Skip past any org-mode metadata/properties
+;;     (when (re-search-forward "^\\*\\|^[^#:].*$" nil t)
+;;       (beginning-of-line)
+;;       (let ((content-start (point)))
+;;         (org-export-as 'md nil nil nil '(:with-toc nil :with-tags nil))))))
 
-(defun org-roam--format-quartz-frontmatter (title tags)
-  "Format the YAML frontmatter for Quartz 4."
-  (let ((frontmatter "---\n")
-        (yaml-title (format "title: %s\n" title))
-        (yaml-draft "draft: false\n")
-        (yaml-tags (if tags
-                       (concat "tags:\n"
-                               (mapconcat (lambda (tag)
-                                            (format "  - %s" tag))
-                                          tags "\n") "\n")
-                     "")))
-    (concat frontmatter yaml-title yaml-draft yaml-tags "---\n")))
+;; (defun org-roam--format-quartz-frontmatter (title tags)
+;;   "Format the YAML frontmatter for Quartz 4."
+;;   (let ((frontmatter "---\n")
+;;         (yaml-title (format "title: %s\n" title))
+;;         (yaml-draft "draft: false\n")
+;;         (yaml-tags (if tags
+;;                        (concat "tags:\n"
+;;                                (mapconcat (lambda (tag)
+;;                                             (format "  - %s" tag))
+;;                                           tags "\n") "\n")
+;;                      "")))
+;;     (concat frontmatter yaml-title yaml-draft yaml-tags "---\n")))
 
-(defun org-roam--sanitize-filename (title)
-  "Sanitize title for use as filename."
-  (let ((clean-title (replace-regexp-in-string "[^a-zA-Z0-9-_\\. ]" "" title)))
-    (replace-regexp-in-string "\\s-+" "-" clean-title)))
+;; (defun org-roam--sanitize-filename (title)
+;;   "Sanitize title for use as filename."
+;;   (let ((clean-title (replace-regexp-in-string "[^a-zA-Z0-9-_\\. ]" "" title)))
+;;     (replace-regexp-in-string "\\s-+" "-" clean-title)))
 
-;; Alternative version that uses org-export-as directly
-(defun org-roam-export-to-quartz-alt ()
-  "Alternative export function using org-export-as directly."
-  (interactive)
-  (unless (derived-mode-p 'org-mode)
-    (error "This function can only be called from an org-mode buffer"))
+;; ;; Alternative version that uses org-export-as directly
+;; (defun org-roam-export-to-quartz-alt ()
+;;   "Alternative export function using org-export-as directly."
+;;   (interactive)
+;;   (unless (derived-mode-p 'org-mode)
+;;     (error "This function can only be called from an org-mode buffer"))
 
-  (let* ((node (org-roam-node-at-point))
-         (title (or (org-roam-node-title node)
-                    (file-name-sans-extension (file-name-nondirectory buffer-file-name))))
-         (tags (org-roam-node-tags node))
-         (filename (org-roam--sanitize-filename title))
-         (output-dir "~/code/web/digital-garden/content/")
-         (output-file (expand-file-name (concat filename ".md") output-dir)))
+;;   (let* ((node (org-roam-node-at-point))
+;;          (title (or (org-roam-node-title node)
+;;                     (file-name-sans-extension (file-name-nondirectory buffer-file-name))))
+;;          (tags (org-roam-node-tags node))
+;;          (filename (org-roam--sanitize-filename title))
+;;          (output-dir "~/code/web/digital-garden/content/")
+;;          (output-file (expand-file-name (concat filename ".md") output-dir)))
 
-    ;; Ensure output directory exists
-    (unless (file-directory-p output-dir)
-      (make-directory output-dir t))
+;;     ;; Ensure output directory exists
+;;     (unless (file-directory-p output-dir)
+;;       (make-directory output-dir t))
 
-    ;; Export to markdown string
-    (let ((markdown-content (org-export-as 'md nil nil nil '(:with-toc nil :with-tags nil))))
-      (with-temp-file output-file
-        (insert (org-roam--format-quartz-frontmatter title tags))
-        (insert "\n")
-        (insert markdown-content)))
+;;     ;; Export to markdown string
+;;     (let ((markdown-content (org-export-as 'md nil nil nil '(:with-toc nil :with-tags nil))))
+;;       (with-temp-file output-file
+;;         (insert (org-roam--format-quartz-frontmatter title tags))
+;;         (insert "\n")
+;;         (insert markdown-content)))
 
-    (message "Exported to: %s" output-file)))
+;;     (message "Exported to: %s" output-file)))
 
 
 ;; ╺┳┓╻┏━┓┏━┓┏┓ ╻  ┏━╸╺┳┓
@@ -438,5 +618,3 @@
 ;;                       (_  (kbd "SPC")))
 ;;                   (kbd "SPC"))))
 ;;   )
-
-

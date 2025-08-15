@@ -66,7 +66,7 @@
            ))
 
 ;; LSP
-(package! lsp-tailwindcss :recipe (:host github :repo "merrickluo/lsp-tailwindcss"))
+;; (package! lsp-tailwindcss :recipe (:host github :repo "merrickluo/lsp-tailwindcss"))
 
 ;; Visuals
 ;; (package! beacon)
@@ -76,6 +76,16 @@
 ;; (package! builtin-package :disable t)
 (package! doom-theme :disable t)
 
+;; (when (package! lsp-bridge
+;;         :recipe (:host github
+;;                  :repo "manateelazycat/lsp-bridge"
+;;                  :branch "master"
+;;                  :files ("*.el" "*.py" "acm" "core" "langserver" "multiserver" "resources")
+;;                  ;; do not perform byte compilation or native compilation for lsp-bridge
+;;                  :build (:not compile)))
+(package! markdown-mode)
+(package! yasnippet)
+
                                         ; (package! organic-green-theme)
                                         ; (package! soothe-theme)
                                         ; (package! cherry-blossom-theme)
@@ -84,7 +94,7 @@
                                         ; (package! jazz-theme)
                                         ; (package! afternoon-theme)
                                         ; (package! anti-zenburn-theme)
-(package! sublime-themes)
+;; (package! sublime-themes)
                                         ; (package! darktooth-theme)
 (package! tao-theme)
 (package! kaolin-themes)
@@ -119,16 +129,13 @@
                                         ; (package! nordic-night-theme)
 ;; (package! old-lace-theme)
                                         ; (package! slime-theme)
-(package! soft-stone-theme)
 ;; (package! spike-theme)
-(package! srcery-theme)
                                         ; (package! sunburn-theme)
                                         ; (package! suscolors-theme)
                                         ; (package! toxi-theme)
                                         ; (package! tron-legacy-theme)
                                         ; (package! warm-night-theme)
                                         ; (package! purple-haze-theme)
-(package! xresources-theme)
 
 (package! colorless-themes
   :recipe (:host nil :repo "https://git.sr.ht/~lthms/colorless-themes.el"
@@ -141,7 +148,7 @@
            ))
 
 
-(package! vue-mode)
+;; (package! vue-mode)
 
 (package! kanagawa
   :recipe (:host nil :repo "https://github.com/Fabiokleis/kanagawa-emacs"
@@ -159,6 +166,8 @@
 (package! doric-themes)
 
 (package! standard-themes)
+
+(package! stimmung-themes)
 
 (package! olivetti-mode
   :recipe (:host nil :repo "https://github.com/rnkn/olivetti"

@@ -15,7 +15,7 @@
    '("\\`https://fniessen\\.github\\.io/org-html-themes/org/theme-bigblow\\.setup\\'"
      "\\`https://fniessen\\.github\\.io/org-html-themes/org/theme-readtheorg\\.setup\\'"
      "\\`https://fniessen\\.github\\.io/org-html-themes/org/read-the-docs\\.setup\\'"))
- '(package-selected-packages '(apheleia corfu flycheck lsp-ui))
+ '(package-selected-packages '(apheleia corfu flycheck))
  '(send-mail-function 'mailclient-send-it))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
