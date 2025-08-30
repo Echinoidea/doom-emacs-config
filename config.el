@@ -1,24 +1,5 @@
 ;;; $DOOMDIR/config.el -*- lexical-binding: t; -*-
 
-;; Place your private configuration here! Remember, you do not need to run 'doom
-;; sync' after modifying this file!
-
-;; Some functionality uses this to identify you, e.g. GPG configuration, email
-;; clients, file templates and snippets. It is optional.
-;; (setq user-full-name "John Doe"
-;;       user-mail-address "john@doe.com")
-
-;; Doom exposes five (optional) variables for controlling fonts in Doom:
-;;
-;; - `doom-font' -- the primary font to use
-;; - `doom-variable-pitch-font' -- a non-monospace font (where applicable)
-;; - `doom-big-font' -- used for `doom-big-font-mode'; use this for
-;;   presentations or streaming.
-;; - `doom-symbol-font' -- for symbols
-;; - `doom-serif-font' -- for the `fixed-pitch-serif' face
-;;
-;; See 'C-h v doom-font' for documentation and more examples of what they
-;; accept. For example:
 
 ;; ┏━┓╻ ╻┏━┓╺┳╸┏━╸┏┳┓   ┏━╸┏━┓┏┓╻┏━╸╻┏━╸
 ;; ┗━┓┗┳┛┗━┓ ┃ ┣╸ ┃┃┃   ┃  ┃ ┃┃┗┫┣╸ ┃┃╺┓
@@ -40,47 +21,53 @@
 ;; Evil Mode
 (setq evil-escape-key-sequence "jk")
 
-(after! evil
-  ;; Redefine 'o' and 'o' to not enter insert mode
-  (map! :map evil-normal-state-map
-        "o" (cmd! (evil-open-below 1) (evil-normal-state))
-        "O" (cmd! (evil-open-above 1) (evil-normal-state)))
-  (windmove-default-keybindings)
+;; NOTE: Unneccesary, causes issues with minibuffers. Just use C-w {hjkl}
+;; (after! evil
+;;   ;; Redefine 'o' and 'o' to not enter insert mode
+;;   (map! :map evil-normal-state-map
+;;         "o" (cmd! (evil-open-below 1) (evil-normal-state))
+;;         "O" (cmd! (evil-open-above 1) (evil-normal-state)))
+;;   (windmove-default-keybindings)
 
-  ;; CTRL + h/j/k/l for window navigation
-  (define-key evil-normal-state-map (kbd "C-h") 'windmove-left)
-  (define-key evil-normal-state-map (kbd "C-j") 'windmove-down)
-  (define-key evil-normal-state-map (kbd "C-k") 'windmove-up)
-  (define-key evil-normal-state-map (kbd "C-l") 'windmove-right)
-  (define-key evil-insert-state-map (kbd "C-h") 'windmove-left)
-  (define-key evil-insert-state-map (kbd "C-j") 'windmove-down)
-  (define-key evil-insert-state-map (kbd "C-k") 'windmove-up)
-  (define-key evil-insert-state-map (kbd "C-l") 'windmove-right)
-  (define-key evil-visual-state-map (kbd "C-h") 'windmove-left)
-  (define-key evil-visual-state-map (kbd "C-j") 'windmove-down)
-  (define-key evil-visual-state-map (kbd "C-k") 'windmove-up)
-  (define-key evil-visual-state-map (kbd "C-l") 'windmove-right)
-  )
+;;   ;; CTRL + h/j/k/l for window navigation
+;;   (define-key evil-normal-state-map (kbd "C-h") 'windmove-left)
+;;   (define-key evil-normal-state-map (kbd "C-j") 'windmove-down)
+;;   (define-key evil-normal-state-map (kbd "C-k") 'windmove-up)
+;;   (define-key evil-normal-state-map (kbd "C-l") 'windmove-right)
+;;   (define-key evil-insert-state-map (kbd "C-h") 'windmove-left)
+;;   (define-key evil-insert-state-map (kbd "C-j") 'windmove-down)
+;;   (define-key evil-insert-state-map (kbd "C-k") 'windmove-up)
+;;   (define-key evil-insert-state-map (kbd "C-l") 'windmove-right)
+;;   (define-key evil-visual-state-map (kbd "C-h") 'windmove-left)
+;;   (define-key evil-visual-state-map (kbd "C-j") 'windmove-down)
+;;   (define-key evil-visual-state-map (kbd "C-k") 'windmove-up)
+;;   (define-key evil-visual-state-map (kbd "C-l") 'windmove-right)
+;;   )
 
-(after! org
-  ;; Remove windmove bindings in org-mode
-  (define-key org-mode-map (kbd "S-<left>") 'org-shiftleft)
-  (define-key org-mode-map (kbd "S-<right>") 'org-shiftright)
-  (define-key org-mode-map (kbd "S-<up>") 'org-shiftup)
-  (define-key org-mode-map (kbd "S-<down>") 'org-shiftdown)
+;; (after! org
+;;   ;; Remove windmove bindings in org-mode
+;;   (define-key org-mode-map (kbd "S-<left>") 'org-shiftleft)
+;;   (define-key org-mode-map (kbd "S-<right>") 'org-shiftright)
+;;   (define-key org-mode-map (kbd "S-<up>") 'org-shiftup)
+;;   (define-key org-mode-map (kbd "S-<down>") 'org-shiftdown)
 
-  ;; Also override in evil states specifically for org-mode
-  (evil-define-key 'normal org-mode-map
-    (kbd "S-<left>") 'org-shiftleft
-    (kbd "S-<right>") 'org-shiftright
-    (kbd "S-<up>") 'org-shiftup
-    (kbd "S-<down>") 'org-shiftdown)
+;;   ;; Also override in evil states specifically for org-mode
+;;   (evil-define-key 'normal org-mode-map
+;;     (kbd "S-<left>") 'org-shiftleft
+;;     (kbd "S-<right>") 'org-shiftright
+;;     (kbd "S-<up>") 'org-shiftup
+;;     (kbd "S-<down>") 'org-shiftdown)
 
-  (evil-define-key 'insert org-mode-map
-    (kbd "S-<left>") 'org-shiftleft
-    (kbd "S-<right>") 'org-shiftright
-    (kbd "S-<up>") 'org-shiftup
-    (kbd "S-<down>") 'org-shiftdown))
+;;   (evil-define-key 'insert org-mode-map
+;;     (kbd "S-<left>") 'org-shiftleft
+;;     (kbd "S-<right>") 'org-shiftright
+;;     (kbd "S-<up>") 'org-shiftup
+;;     (kbd "S-<down>") 'org-shiftdown))
+
+;; Vertico
+
+(after! minibuffer
+  (setq completion-styles '(flex basic partial-completion)))
 
 ;; ┏━┓╻ ╻╻ ╻
 ;; ┣━┫┃┏┛┗┳┛
@@ -154,7 +141,7 @@
        (subst-char-in-string ?_ ?  buffer-file-name))
     (funcall orig-fun)))
 
-(setq doom-theme 'kaolin-dark)
+(setq doom-theme 'ef-dream)
 (setq display-line-numbers-type 'relative)
 
 ;; Dashboard
@@ -251,9 +238,9 @@
 
 (setq tide-node-executable "/usr/bin/node")
 
-(use-package! lsp-bridge
-  :config
-  (global-lsp-bridge-mode))
+;; (use-package! lsp-bridge
+;;   :config
+;;   (global-lsp-bridge-mode))
 
 (add-hook 'vue-mode-hook #'lsp!)
 
@@ -312,21 +299,28 @@
 (setq org-directory "~/org/")
 
 (after! org
-  (setq org-agenda-files '("~/code/" "~/org/" "~/org/roam/daily"))
-  (setq org-log-done 'time)
+  (setq org-agenda-files
+        (list "~/org/todo-personal.org"
+              "~/org/todo-work.org"
+              "~/org/todo-ibegin.org"
+              "~/org/todo-midas.org"
+              "~/org/todo-school.org"
+              "~/org/todo-gamedev.org"
+              "~/org/todo-programming.org")))
 
-  ;; Demote highlighted headings
-  (map! :map org-mode-map
-        :localleader
-        :prefix "s"
-        :desc "Demote heading" ">" #'my/org-do-demote)
+(setq org-log-done 'time)
 
-  ;; Promote highlighted headings
-  (map! :map org-mode-map
-        :localleader
-        :prefix "s"
-        :desc "Promote heading" "<" #'my/org-do-promote)
-  )
+;; Demote highlighted headings
+(map! :map org-mode-map
+      :localleader
+      :prefix "s"
+      :desc "Demote heading" ">" #'my/org-do-demote)
+
+;; Promote highlighted headings
+(map! :map org-mode-map
+      :localleader
+      :prefix "s"
+      :desc "Promote heading" "<" #'my/org-do-promote)
 
 (with-eval-after-load 'org (global-org-modern-mode))
 
@@ -339,6 +333,277 @@
 
 (org-babel-do-load-languages
  'org-babel-load-languages '((C . t)))
+
+;; Deft
+(after! deft
+  (setq deft-directory "~/org/deft/")
+  (setq deft-recursive t))
+
+
+;; org-agenda
+(defun org-agenda-open-hook ()
+  "Hook to be run when org-agenda is opened"
+  (olivetti-mode))
+
+(add-hook 'org-agenda-mode-hook 'org-agenda-open-hook)
+
+(after! org-agenda
+  (setq org-agenda-timegrid-use-ampm t)
+
+  ;; Only show one day of the agenda at a time
+  (setq org-agenda-span 1
+        org-agenda-start-day "+0d")
+
+  ;; Hide duplicates of the same todo item
+  (setq org-agenda-skip-timestamp-if-done t
+        org-agenda-skip-deadline-if-done t
+        org-agenda-skip-scheduled-if-done t
+        org-agenda-skip-scheduled-if-deadline-is-shown t
+        org-agenda-skip-timestamp-if-deadline-is-shown t)
+
+  ;; Clean time grid - remove the conflicting configuration
+  (setq org-agenda-current-time-string "")
+  (setq org-agenda-time-grid '((daily) () "" ""))
+
+  ;; Category icons - theme colors will be used
+  (when (featurep 'all-the-icons)
+    (setq org-agenda-category-icon-alist
+          `(("School" ,(list (all-the-icons-faicon "graduation-cap" :height 0.9 :v-adjust 0.1)) nil nil :ascent center)
+            ("IBEGIN" ,(list (all-the-icons-faicon "child" :height 0.9 :v-adjust 0.1)) nil nil :ascent center)
+            ("MIDAS" ,(list (all-the-icons-faicon "line-chart" :height 0.9 :v-adjust 0.1)) nil nil :ascent center)
+            ("Work" ,(list (all-the-icons-faicon "suitcase" :height 0.9 :v-adjust 0.1)) nil nil :ascent center)
+            ("Gamedev" ,(list (all-the-icons-faicon "gamepad" :height 0.9 :v-adjust 0.1)) nil nil :ascent center)
+            ("Programming" ,(list (all-the-icons-faicon "code" :height 0.9 :v-adjust 0.1)) nil nil :ascent center)
+            ("Personal" ,(list (all-the-icons-material "person" :height 0.9 :v-adjust 0.1)) nil nil :ascent center))))
+
+  ;; Enhanced prefix format to show icon + category + content
+  (setq org-agenda-prefix-format '(
+                                   (agenda . "  %i %-12:c %t ")     ; icon + category + time
+                                   (todo . "  %i %-12:c ")          ; icon + category
+                                   (tags . "  %i %-12:c ")          ; icon + category
+                                   (search . "  %i %-12:c "))))     ; icon + category
+
+;; Enhanced font faces for better visual hierarchy - respects theme colors
+(custom-set-faces!
+  ;; Done items - strikethrough styling
+  '(org-agenda-done :strike-through t)
+
+  ;; Current day emphasis
+  '(org-agenda-date-today :weight bold :height 1.1 :underline nil)
+
+  ;; Regular dates emphasis
+  '(org-agenda-date :weight bold :height 1.05)
+
+  ;; Weekend dates
+  '(org-agenda-date-weekend :weight bold :height 1.05 :slant italic)
+
+  ;; Categories
+  '(org-agenda-structure :weight bold :height 0.9)
+
+  ;; Current time indicator
+  '(org-agenda-current-time :weight bold))
+
+;; org-super-agenda with enhanced styling
+(org-super-agenda-mode t)
+(after! org-super-agenda
+  (setq org-super-agenda-groups
+        '(;; Overdue items - highest priority
+          (:name " Overdue"
+           :scheduled past
+           :order 1
+           :face (:weight bold))
+
+          ;; Today's scheduled items
+          (:name " Today"
+           :time-grid t
+           :date today
+           :scheduled today
+           :order 2
+           :face (:weight bold))
+
+          ;; Work items
+          (:name " Work"
+           :file-path "work"
+           :order 3
+           :face (:weight semi-bold))
+
+          ;; Personal items
+          (:name " Personal"
+           :file-path "personal"
+           :order 4
+           :face (:weight semi-bold))
+
+          ;; IBEGIN items
+          (:name " IBEGIN"
+           :file-path "ibegin"
+           :order 5
+           :face (:weight semi-bold))
+
+          ;; MIDAS items
+          (:name " MIDAS"
+           :file-path "midas"
+           :order 6
+           :face (:weight semi-bold))
+
+          ;; School items
+          (:name " School"
+           :file-path "school"
+           :order 7
+           :face (:weight semi-bold))
+
+          ;; Programming items
+          (:name " Programming"
+           :file-path "programming"
+           :order 8
+           :face (:weight semi-bold))
+
+          ;; Gamedev items
+          (:name " Gamedev"
+           :file-path "gamedev"
+           :order 9
+           :face (:weight semi-bold)))))
+
+;; Additional styling for super-agenda headers
+(custom-set-faces!
+  '(org-super-agenda-header :height 1.1 :weight bold :underline nil :extend t))
+
+
+
+(with-eval-after-load 'org (global-org-modern-mode))
+
+;; To-do management
+;; Quick TODO creation functions
+;; Quick TODO creation functions
+(defvar my/todo-categories
+  '("personal" "work" "ibegin" "midas" "school" "gamedev" "programming")
+  "List of available TODO categories")
+
+(defvar my/org-dir "~/org/"
+  "Directory where org files are stored")
+
+(defun my/get-todo-file (category)
+  "Get the full path to the TODO file for CATEGORY."
+  (expand-file-name (concat "todo-" category ".org") my/org-dir))
+
+(defun my/ensure-todo-file-exists (category)
+  "Ensure the TODO file for CATEGORY exists with proper header."
+  (let ((file-path (my/get-todo-file category)))
+    (unless (file-exists-p file-path)
+      (with-temp-file file-path
+        (insert (format "#+TITLE: %s TODOs
+#+CATEGORY: %s
+#+STARTUP: overview
+#+TODO: TODO DOING | DONE CANCELLED
+
+* Tasks
+"
+                        (capitalize category)
+                        (capitalize category)))))))
+
+(defun my/quick-todo (category title &optional deadline effort tags)
+  "Create a quick TODO item in CATEGORY with TITLE, optional DEADLINE and EFFORT."
+  (interactive)
+  (my/ensure-todo-file-exists category)
+  (let ((file-path (my/get-todo-file category)))
+    (with-current-buffer (find-file-noselect file-path)
+      (goto-char (point-max))
+      (insert "\n** TODO " title)
+      (when deadline
+        (insert "\n   DEADLINE: " deadline))
+      (when effort
+        (insert "\n   :PROPERTIES:\n   :Effort: " effort "\n   :END:"))
+      (when tags
+        (org-set-tags tags))
+      (save-buffer)
+      (message "TODO added to %s" category))))
+
+(defun my/dmenu-quick-todo ()
+  "Create a TODO via dmenu interface."
+  (interactive)
+  (let* ((category (completing-read "Category: " my/todo-categories))
+         (title (read-string "TODO title: "))
+         (has-deadline (y-or-n-p "Add deadline? "))
+         (deadline (when has-deadline
+                     (format "<%s>" (org-read-date))))
+         (has-effort (y-or-n-p "Add time estimate? "))
+         (effort (when has-effort
+                   (read-string "Time estimate (e.g., 2h, 30m): ")))
+         (has-tags (y-or-n-p "Add tags? "))
+         (tags (when has-tags
+                 (split-string (read-string "Tags (space separated): ") " " t))))
+    (my/quick-todo category title deadline effort tags)))
+
+(defun my/quick-todo-at-point ()
+  "Convert current line to a TODO item with prompts."
+  (interactive)
+  (let* ((current-line (thing-at-point 'line t))
+         (title (string-trim current-line))
+         (category (completing-read "Category: " my/todo-categories)))
+    (kill-whole-line)
+    (my/quick-todo category title)))
+
+;; Simplified function for dmenu/external calls
+(defun my/quick-todo-simple (category title)
+  "Create a simple TODO item for dmenu/external calls."
+  (my/ensure-todo-file-exists category)
+  (let ((file-path (my/get-todo-file category)))
+    (with-current-buffer (find-file-noselect file-path)
+      (goto-char (point-max))
+      (insert "\n** TODO " title)
+      (save-buffer)
+      (message "TODO added to %s" category))))
+(defun my/mark-todo-done ()
+  "Mark current TODO as DONE and add completion timestamp."
+  (interactive)
+  (when (org-at-heading-p)
+    (org-todo 'done)
+    (org-add-planning-info 'closed (org-current-effective-time))
+    (save-buffer)
+    (message "TODO marked as DONE")))
+
+;; Quick refile function
+(defun my/quick-refile-todo ()
+  "Quickly refile current TODO to another category."
+  (interactive)
+  (when (org-at-heading-p)
+    (let* ((category (completing-read "Move to category: " my/todo-categories))
+           (target-file (my/get-todo-file category)))
+      (my/ensure-todo-file-exists category)
+      (org-refile nil nil (list nil target-file nil nil))
+      (message "TODO moved to %s" category))))
+
+;; Yasnippet integration
+(defun my/org-todo-snippet ()
+  "Insert a TODO template with prompts."
+  (interactive)
+  (let* ((title (read-string "TODO title: "))
+         (has-deadline (y-or-n-p "Add deadline? "))
+         (deadline-str (if has-deadline
+                           (format "\n   DEADLINE: <%s>" (org-read-date))
+                         ""))
+         (has-effort (y-or-n-p "Add time estimate? "))
+         (effort-str (if has-effort
+                         (let ((effort (read-string "Time estimate: ")))
+                           (format "\n   :PROPERTIES:\n   :Effort: %s\n   :END:" effort))
+                       "")))
+    (insert (format "** TODO %s%s%s" title deadline-str effort-str))
+    (org-set-tags-command))) ; Prompt for tags
+
+;; Function to create TODO with deadline
+(defun my/quick-todo-with-deadline (category title deadline-str)
+  "Create a TODO item with a deadline."
+  (my/ensure-todo-file-exists category)
+  (let ((file-path (my/get-todo-file category)))
+    (with-current-buffer (find-file-noselect file-path)
+      (goto-char (point-max))
+      (insert "\n** TODO " title)
+      (insert "\n   DEADLINE: <" deadline-str ">")
+      (save-buffer)
+      (message "TODO added to %s with deadline %s" category deadline-str))))
+
+;; RSS
+(add-hook! 'elfeed-search-mode-hook #'elfeed-update)
+
 
 ;; ╻╺┳┓┏━╸
 ;; ┃ ┃┃┣╸

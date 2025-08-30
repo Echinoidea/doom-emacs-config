@@ -1,0 +1,17 @@
+# -*- mode: snippet -*-
+# name: tsx-header
+# key: tsx-header
+# --
+/**
+ * ${1:ComponentName}
+ *
+ * @author ${2:`(user-full-name)`}
+ * @created `(format-time-string "%Y-%m-%d")`
+ * @purpose ${3:Brief description of what this component does}
+ *
+ * ${4:Additional notes, dependencies, or usage examples}
+ *
+ * @todo ${5:Any pending tasks or improvements}
+ */
+
+$0

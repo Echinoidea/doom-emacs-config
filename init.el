@@ -31,7 +31,7 @@
        (vertico +childframe +icons +fuzzy)           ; the search engine of the future
 
        :ui
-       ;;deft              ; notational velocity for Emacs (CHECK THIS OUT FOR ORG MODE QUICK NOTE TAKING)
+       deft              ; notational velocity for Emacs (CHECK THIS OUT FOR ORG MODE QUICK NOTE TAKING)
        doom              ; what makes DOOM look the way it does
        doom-dashboard    ; a nifty splash screen for Emacs
        doom-quit         ; DOOM quit-message prompts when you quit Emacs
@@ -189,7 +189,7 @@
        calendar
        ;;emms
        everywhere        ; *leave* Emacs!? You must be joking
-       ;;irc               ; how neckbeards socialize
+       irc               ; how neckbeards socialize
        (rss +org)        ; emacs as an RSS reader
 
        :config
