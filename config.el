@@ -21,58 +21,25 @@
 ;; Evil Mode
 (setq evil-escape-key-sequence "jk")
 
-;; NOTE: Unneccesary, causes issues with minibuffers. Just use C-w {hjkl}
-;; (after! evil
-;;   ;; Redefine 'o' and 'o' to not enter insert mode
-;;   (map! :map evil-normal-state-map
-;;         "o" (cmd! (evil-open-below 1) (evil-normal-state))
-;;         "O" (cmd! (evil-open-above 1) (evil-normal-state)))
-;;   (windmove-default-keybindings)
-
-;;   ;; CTRL + h/j/k/l for window navigation
-;;   (define-key evil-normal-state-map (kbd "C-h") 'windmove-left)
-;;   (define-key evil-normal-state-map (kbd "C-j") 'windmove-down)
-;;   (define-key evil-normal-state-map (kbd "C-k") 'windmove-up)
-;;   (define-key evil-normal-state-map (kbd "C-l") 'windmove-right)
-;;   (define-key evil-insert-state-map (kbd "C-h") 'windmove-left)
-;;   (define-key evil-insert-state-map (kbd "C-j") 'windmove-down)
-;;   (define-key evil-insert-state-map (kbd "C-k") 'windmove-up)
-;;   (define-key evil-insert-state-map (kbd "C-l") 'windmove-right)
-;;   (define-key evil-visual-state-map (kbd "C-h") 'windmove-left)
-;;   (define-key evil-visual-state-map (kbd "C-j") 'windmove-down)
-;;   (define-key evil-visual-state-map (kbd "C-k") 'windmove-up)
-;;   (define-key evil-visual-state-map (kbd "C-l") 'windmove-right)
-;;   )
-
-;; (after! org
-;;   ;; Remove windmove bindings in org-mode
-;;   (define-key org-mode-map (kbd "S-<left>") 'org-shiftleft)
-;;   (define-key org-mode-map (kbd "S-<right>") 'org-shiftright)
-;;   (define-key org-mode-map (kbd "S-<up>") 'org-shiftup)
-;;   (define-key org-mode-map (kbd "S-<down>") 'org-shiftdown)
-
-;;   ;; Also override in evil states specifically for org-mode
-;;   (evil-define-key 'normal org-mode-map
-;;     (kbd "S-<left>") 'org-shiftleft
-;;     (kbd "S-<right>") 'org-shiftright
-;;     (kbd "S-<up>") 'org-shiftup
-;;     (kbd "S-<down>") 'org-shiftdown)
-
-;;   (evil-define-key 'insert org-mode-map
-;;     (kbd "S-<left>") 'org-shiftleft
-;;     (kbd "S-<right>") 'org-shiftright
-;;     (kbd "S-<up>") 'org-shiftup
-;;     (kbd "S-<down>") 'org-shiftdown))
-
 ;; Vertico
 
-(after! minibuffer
-  (setq completion-styles '(flex basic partial-completion)))
+(after! vertico
+  (setq completion-styles '(flex basic partial-completion))
+  (setq completion-ignore-case t)
+  (setq read-file-name-completion-ignore-case t)
+  (setq read-buffer-completion-ignore-case t)
+  )
+
 
 ;; ┏━┓╻ ╻╻ ╻
 ;; ┣━┫┃┏┛┗┳┛
 ;; ╹ ╹┗┛  ╹
 ;; Avy
+;;
+
+(after! evil
+  (evil-define-key 'normal 'global "f" #'avy-goto-char-2))
+
 (map! :leader
       (:prefix-map ("j" . "jump and edit")
        :desc "goto char timer" "j" #'avy-goto-char-2
@@ -111,10 +78,36 @@
 ;; ╹ ╹╹  ╹  ┗━╸╹ ╹╹┗╸╹ ╹╹ ╹┗━╸┗━╸
 ;; Appearance
 ;;
+
+;; alpha / transparency
+(set-frame-parameter nil 'alpha-background 92)  ;; Sets transparency for the current frame
+(add-to-list 'default-frame-alist '(alpha-background . 92)) ;; Sets transparency for all new frames
+
 ;; Font
-(setq doom-font (font-spec :family "Maple Mono" :size 14)
+(setq doom-font (font-spec :family "Terminess Nerd Font Mono" :size 16)
       doom-serif-font (font-spec :family "GoMono Nerd Font" :size 14)
       doom-variable-pitch-font (font-spec :family "Latin Modern Roman" :size 12))
+
+(defun show-face-at-point ()
+  "Show the face at point."
+  (interactive)
+  (message "Face: %s" (get-char-property (point) 'face)))
+
+(defun my/buffer-face-mode-tidal ()
+  "Sets font to bigblueterm for tidal mode"
+  (interactive)
+  (setq buffer-face-mode-face '(:family "BigBlueTerm437 Nerd Font" :height 100))
+  (buffer-face-mode))
+
+
+(defun my/buffer-face-mode-haskell ()
+  "Sets font to bigblueterm for tidal mode"
+  (interactive)
+  (setq buffer-face-mode-face '(:family "GoMono Nerd Font" :height 100))
+  (buffer-face-mode))
+
+(add-hook 'tidal-mode-hook 'my/buffer-face-mode-tidal)
+(add-hook 'haskell-mode-hook 'my/buffer-face-mode-haskell)
 
 (after! writeroom-mode
   (setq +zen-text-scale 0
@@ -132,6 +125,7 @@
         doom-modeline-height 25
         doom-modeline-modal nil))
 
+
 (defadvice! doom-modeline--buffer-file-name-roam-aware-a (orig-fun)
   :around #'doom-modeline-buffer-file-name ; takes no args
   (if (string-match-p (regexp-quote org-roam-directory) (or buffer-file-name ""))
@@ -141,20 +135,43 @@
        (subst-char-in-string ?_ ?  buffer-file-name))
     (funcall orig-fun)))
 
-(setq doom-theme 'ef-dream)
+(setq doom-theme 'doom-rosepine)
 (setq display-line-numbers-type 'relative)
+
+
+;; Centaur tabs
+(after! centaur-tabs
+  (setq centaur-tabs-set-close-button nil)
+  (setq centaur-tabs-show-new-tab-button nil)
+  (setq uniquify-buffer-name-style 'forward) ; or 'reverse, 'post-forward, etc.
+  (setq uniquify-separator "/")
+  (setq uniquify-after-kill-buffer-p t)
+  (setq uniquify-ignore-buffers-re "^\\*")
+  )
+
+(defun my/centaur-tabs-buffer-tab-label (tab)
+  "Return a label for TAB using uniquify-style naming."
+  (let ((buffer (car tab)))
+    (if (bufferp buffer)
+        (buffer-name buffer)  ; This will use the uniquified name
+      (format "%s" buffer))))
+
+(advice-add 'centaur-tabs-buffer-tab-label :override #'my/centaur-tabs-buffer-tab-label)
 
 ;; Dashboard
 
+;; Custom Doom Dashboard Configuration
+
+;; Your existing splash image configuration
 (defun my/set-fancy-splash-image-by-theme ()
-;;; Set doom fancy splash image for specific loaded themes,
-;;; if there is no corresponding image in $DOOM_DIR/splashes, load default doom ascii art
+  "Set doom fancy splash image for specific loaded themes,
+   if there is no corresponding image in $DOOM_DIR/splashes, load default doom ascii art"
   (let* ((theme-name (symbol-name (car custom-enabled-themes)))
          (image-path (expand-file-name
-                      (format "~/.config/doom/splashes/%s.jpg" theme-name)))) ; Adjust path
+                      (format "~/.config/doom/splashes/%s.jpg" theme-name))))
     (if (file-exists-p image-path)
         (setq fancy-splash-image image-path)
-      (setq fancy-splash-image nil)))) ;; nil = fallback to Doom ASCII
+      (setq fancy-splash-image nil)))) ;; nil = fallback to Doom ASCII, change to svg if you want
 
 ;; Set splash when theme is loaded
 (add-hook 'doom-load-theme-hook #'my/set-fancy-splash-image-by-theme)
@@ -164,12 +181,61 @@
   (add-hook 'after-make-frame-functions
             (lambda (_frame)
               (with-selected-frame _frame
-                (my/set-fancy-splash-image-by-theme))))
-  )
+                (my/set-fancy-splash-image-by-theme)))))
 
-;; For non-daemon mode, just call it directly
+;; For non-daemon mode, call it directly
 (unless (daemonp)
   (my/set-fancy-splash-image-by-theme))
+
+;;;; Color blocks
+(defvar my/dashboard-palette-char "██")
+
+(defun my/dashboard-palette ()
+  "Display color palette blocks"
+  (let ((colors '(("black" . grey)
+                  ("red" . red)
+                  ("green" . green)
+                  ("yellow" . yellow)
+                  ("blue" . blue)
+                  ("magenta" . magenta)
+                  ("cyan" . cyan)
+                  ("white" . fg)))
+        (char (concat my/dashboard-palette-char " "))
+        (result ""))
+
+    (setq result (concat result "\n"))
+    (dolist (color-pair colors)
+      (let* ((color-name (car color-pair))
+             (color-symbol (cdr color-pair))
+             (hex-color (doom-color color-symbol)))
+        (if hex-color
+            (setq result (concat result (propertize char 'face `(:foreground ,hex-color)))))))
+    (setq result (concat result "\n\n"))
+    result))
+
+(defun my/dashboard-palette-widget ()
+  "Color palette dashboard widget"
+  (let ((palette-line (string-trim (my/dashboard-palette))))
+    (insert (+doom-dashboard--center
+             +doom-dashboard--width
+             palette-line)
+            "\n")))
+
+(setq +doom-dashboard-functions
+      '(doom-dashboard-widget-banner
+        my/dashboard-palette-widget
+        doom-dashboard-widget-shortmenu
+        doom-dashboard-widget-loaded
+        doom-dashboard-widget-footer))
+
+
+(defun my/refresh-dashboard-on-theme-change (&rest _)
+  "Refresh the dashboard when theme changes."
+  (when (and (fboundp '+doom-dashboard-reload)
+             (get-buffer +doom-dashboard-name))
+    (+doom-dashboard-reload)))
+
+(add-hook 'doom-load-theme-hook #'my/refresh-dashboard-on-theme-change)
 
 ;; ╻  ┏━┓┏━┓
 ;; ┃  ┗━┓┣━┛
@@ -883,3 +949,16 @@
 ;;                       (_  (kbd "SPC")))
 ;;                   (kbd "SPC"))))
 ;;   )
+
+;; (setq tidal-boot-script-path "~/tidal/BootTidal.hs")
+
+(after! tidal
+  (setq tidal-interpreter "/usr/bin/ghci")
+  (setq tidal-boot-script-path "/usr/share/haskell-tidal/BootTidal.hs"))
+
+(defun tidal-run-region-fixed ()
+  "Run tidal-eval-multiple-lines instead of eval-region."
+  (interactive)
+  (tidal-eval-multiple-lines)
+  (set-mark-command t) ;; unmark the region
+  )

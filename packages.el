@@ -188,3 +188,18 @@
 ;; (package! emacs-application-framework
 ;;   :recipe (:host github :repo "manateelazycat/emacs-application-framework"
 ;;            :files ("eaf.el" "src/lisp/*.el")))
+
+(package! tidal)
+
+(package! buffer-box
+  :recipe (:host nil :repo "https://github.com/rougier/buffer-box"
+           :files ("*.el")))
+
+(package! sudoku)
+
+(package! ewal-doom-themes
+  :recipe (:host nil
+           :repo "https://github.com/cyruseuros/ewal"
+           :branch "master"
+           :files ("doom-themes/*.el")
+           :depth full))
