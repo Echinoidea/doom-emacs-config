@@ -203,3 +203,5 @@
            :branch "master"
            :files ("doom-themes/*.el")
            :depth full))
+
+(package! nethack)

@@ -80,11 +80,11 @@
 ;;
 
 ;; alpha / transparency
-(set-frame-parameter nil 'alpha-background 92)  ;; Sets transparency for the current frame
-(add-to-list 'default-frame-alist '(alpha-background . 92)) ;; Sets transparency for all new frames
+(set-frame-parameter nil 'alpha-background 100)  ;; Sets transparency for the current frame
+(add-to-list 'default-frame-alist '(alpha-background . 100)) ;; Sets transparency for all new frames
 
 ;; Font
-(setq doom-font (font-spec :family "Terminess Nerd Font Mono" :size 16)
+(setq doom-font (font-spec :family "Maple Mono" :size 14)
       doom-serif-font (font-spec :family "GoMono Nerd Font" :size 14)
       doom-variable-pitch-font (font-spec :family "Latin Modern Roman" :size 12))
 
@@ -135,7 +135,7 @@
        (subst-char-in-string ?_ ?  buffer-file-name))
     (funcall orig-fun)))
 
-(setq doom-theme 'doom-rosepine)
+(setq doom-theme 'doom-rouge)
 (setq display-line-numbers-type 'relative)
 
 
@@ -171,7 +171,7 @@
                       (format "~/.config/doom/splashes/%s.jpg" theme-name))))
     (if (file-exists-p image-path)
         (setq fancy-splash-image image-path)
-      (setq fancy-splash-image nil)))) ;; nil = fallback to Doom ASCII, change to svg if you want
+      (setq fancy-splash-image "~/.config/doom/splashes/emacs-cute-splash.png")))) ;; nil = fallback to Doom ASCII, change to svg if you want
 
 ;; Set splash when theme is loaded
 (add-hook 'doom-load-theme-hook #'my/set-fancy-splash-image-by-theme)
