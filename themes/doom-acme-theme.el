@@ -279,7 +279,8 @@ determine the exact padding."
    (web-mode-variable-name-face :foreground acme-red)
    (web-mode-function-name-face :foreground acme-purpleblue)
    (web-mode-html-tag-bracket-face :foreground (doom-darken teal 0.5))
-   (web-mode-html-attr-name-face :foreground cyan)
+   (web-mode-html-attr-name-face :foreground acme-purpleblue)
+   (web-mode-html-attr-value-face :foreground acme-greygreen)
    ;;;; tree-sitter faces
    (tree-sitter-hl-face:string :foreground strings)
    (tree-sitter-hl-face:type :foreground type :weight 'bold)

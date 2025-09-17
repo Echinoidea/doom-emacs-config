@@ -204,4 +204,16 @@
            :files ("doom-themes/*.el")
            :depth full))
 
-(package! nethack)
+(package! rainbow-delimiters)
+
+(package! org-modern-indent)
+
+(package! discover-my-major)
+
+(package! prism)
+
+(package! colorful-mode)
+
+(package! dimmer)
+
+(package! fountain-mode)

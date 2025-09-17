@@ -252,6 +252,8 @@
 (after! typescript-mode
   (add-hook 'typescript-tsx-mode-hook #'lsp!))
 
+(add-hook! '(typescript-mode-hook typescript-tsx-mode-hook rust-mode-hook emacs-lisp-mode-hook) #'rainbow-delimiters-mode)
+
 (defun lsp-booster--advice-json-parse (old-fn &rest args)
   "Try to parse bytecode instead of json."
   (or
@@ -311,8 +313,7 @@
 (add-hook 'vue-mode-hook #'lsp!)
 
 ;; Enable diagnostics popups
-(after! flycheck
-  (add-hook 'flycheck-mode-hook #'flycheck-popup-tip-mode))
+(add-hook 'flycheck-mode-hook #'flycheck-popup-tip-mode)
 
 ;; ┏━┓┏━┓┏━╸   ┏┳┓┏━┓╺┳┓┏━╸
 ;; ┃ ┃┣┳┛┃╺┓   ┃┃┃┃ ┃ ┃┃┣╸
@@ -364,6 +365,9 @@
 
 (setq org-directory "~/org/")
 
+(add-hook 'org-mode-hook #'org-modern-indent-mode 90)
+
+
 (after! org
   (setq org-agenda-files
         (list "~/org/todo-personal.org"
@@ -372,7 +376,8 @@
               "~/org/todo-midas.org"
               "~/org/todo-school.org"
               "~/org/todo-gamedev.org"
-              "~/org/todo-programming.org")))
+              "~/org/todo-programming.org"))
+  )
 
 (setq org-log-done 'time)
 
@@ -742,6 +747,29 @@
   :ttl 0)
 
 
+;;;; Tidal
+
+(after! tidal
+  (setq tidal-interpreter "/usr/bin/ghci")
+  (setq tidal-boot-script-path "/usr/share/haskell-tidal/BootTidal.hs"))
+
+(defun tidal-run-region-fixed ()
+  "Run tidal-eval-multiple-lines instead of eval-region."
+  (interactive)
+  (tidal-eval-multiple-lines)
+  (set-mark-command t) ;; unmark the region
+  )
+
+(after! colorful-mode
+  (global-colorful-mode))
+
+(after! dimmer-mode
+  (dimmer-configure-which-key)
+  (dimmer-configure-org)
+  (dimmer-configure-posframe)
+  (dimmer-mode t))
+
+
 ;; ┏━╸╻ ╻┏┓╻┏━╸╺┳╸╻┏━┓┏┓╻┏━┓
 ;; ┣╸ ┃ ┃┃┗┫┃   ┃ ┃┃ ┃┃┗┫┗━┓
 ;; ╹  ┗━┛╹ ╹┗━╸ ╹ ╹┗━┛╹ ╹┗━┛
@@ -831,134 +859,5 @@
 
 ;;     (message "Exported to: %s" output-file)))
 
-
-;; ╺┳┓╻┏━┓┏━┓┏┓ ╻  ┏━╸╺┳┓
-;;  ┃┃┃┗━┓┣━┫┣┻┓┃  ┣╸  ┃┃
-;; ╺┻┛╹┗━┛╹ ╹┗━┛┗━╸┗━╸╺┻┛
-;; Disabled
-
-;; (after! cdlatex
-;;   (map! :map cdlatex-mode-map
-;;         :i "TAB" #'cdlatex-tab)
-
-;;   (setq cdlatex-math-symbol-alist ; expand when prefixed with `
-;;         '((?e ("\\varepsilon" "\\epsilon"))
-;;           (?f ("\\varphi" "\\phi"))
-;;           (?0 ("\\varnothing" "\\emptyset"))
-;;           (?> ("\\to" "\\implies"))
-;;           (?= ("\\iff" "\\equiv"))
-;;           (?| ("\\mid" "\\vert"))
-;;           (?: ("\\coloneqq")))
-;;         cdlatex-math-modify-alist ; modify text with '
-;;         ;; key mathcmd textcmd type rmdot it
-;;         '((?b "\\mathbb" nil t nil nil)
-;;           (?c "\\mathcal" nil t nil nil)
-;;           (?f "\\mathbf" nil t nil nil)
-;;           (?m "\\mathrm" nil t nil nil)
-;;           (?r "\\mathrel" nil t nil nil)
-;;           (?s "\\mathsf" nil t nil nil)
-;;           (?o "\\operatorname" nil t nil nil))
-;;         cdlatex-command-alist ; expand with <TAB>
-;;         ;; keyword docstring replace hook args textflag mathflag
-;;         '(("eqn" "Insert an EQUATION* environment template" "" cdlatex-environment ("equation*") t nil)
-;;           ("aln" "Insert an ALIGN* environment template" "" cdlatex-environment ("align*") t nil)
-;;           ("sum" "Insert \\sum\\limits_{}^{}" "\\sum\\limits_{?}^{}" cdlatex-position-cursor nil nil t)
-;;           ("prod" "Insert \\prod\\limits_{}^{}" "\\prod\\limits_{?}^{}" cdlatex-position-cursor nil nil t)
-;;           ("bun" "Insert \\bigcup\\limits_{}^{}" "\\bigcup\\limits_{?}^{}" cdlatex-position-cursor nil nil t)
-;;           ("bin" "Insert \\bigcap\\limits_{}^{}" "\\bigcap\\limits_{?}^{}" cdlatex-position-cursor nil nil t)
-;;           ("lim" "Insert \\lim_\\limits{{} \to {}}" "\\lim_\\limits{{?} \to {}}" cdlatex-position-cursor nil nil t)
-;;           ("sr" "Insert {}^2" "{?}^2" cdlatex-position-cursor nil nil t)
-;;           ("cb" "Insert {}^3" "{?}^3" cdlatex-position-cursor nil nil t)
-;;           ("op" "Insert \\operatorname{}()" "\\operatorname{?}()" cdlatex-position-cursor nil nil t))))
-
-
-;; Whenever you reconfigure a package, make sure to wrap your config in an
-;; `after!' block, otherwise Doom's defaults may override your settings. E.g.
-;;
-;;   (after! PACKAGE
-;;     (setq x y))
-;;
-;; The exceptions to this rule:
-;;
-;;   - Setting file/directory variables (like `org-directory')
-;;   - Setting variables which explicitly tell you to set them before their
-;;     package is loaded (see 'C-h v VARIABLE' to look up their documentation).
-;;   - Setting doom variables (which start with 'doom-' or '+').
-;;
-;; Here are some additional functions/macros that will help you configure Doom.
-;;
-;; - `load!' for loading external *.el files relative to this one
-;; - `use-package!' for configuring packages
-;; - `after!' for running code after a package has loaded
-;; - `add-load-path!' for adding directories to the `load-path', relative to
-;;   this file. Emacs searches the `load-path' when you load packages with
-;;   `require' or `use-package'.
-;; - `map!' for binding new keys
-;;
-;; To get information about any of these functions/macros, move the cursor over
-;; the highlighted symbol at press 'K' (non-evil users must press 'C-c c k').
-;; This will open documentation for it, including demos of how they are used.
-;; Alternatively, use `C-h o' to look up a symbol (functions, variables, faces,
-;; etc).
-;;
-;; You can also try 'gd' (or 'C-c c d') to jump to their definition and see how
-;; they are implemented.
-
-
-;; Keybinding suggestion (optional)
-;; (define-key org-mode-map (kbd "C-c C-e q") 'org-roam-export-to-quartz)
-
-;; (use-package! eaf
-;;   :config
-;;   (setq browse-url-browser-function 'eaf-open-browser)
-;;   (defalias 'browse-web #'eaf-open-browser)
-;;   (setq eaf-browser-enable-adblocker "true")
-;;   (setq eaf-browser-continue-where-left-off t)
-;;   (setq eaf-browser-default-search-engine "duckduckgo")
-;;   (setq eaf-browse-blank-page-url "https://duckduckgo.com")
-;;   (setq eaf-browser-default-zoom "3")
-;;   (add-to-list 'load-path "~/.config/emacs/.local/straight/build-30.1/emacs-application-framework/")
-;;   (require 'eaf)
-;;   (require 'eaf-browser)
-;;   (require 'eaf-pdf-viewer)
-;;   (require 'eaf-music-player)
-;;   (require 'eaf-video-player)
-;;   (require 'eaf-js-video-player)
-;;   (require 'eaf-image-viewer)
-;;   (require 'eaf-rss-reader)
-;;   (require 'eaf-markdown-previewer)
-;;   (require 'eaf-org-previewer)
-;;   (require 'eaf-git)
-;;   (require 'eaf-file-manager)
-;;   (require 'eaf-mindmap)
-;;   (require 'eaf-system-monitor)
-;;   (require 'eaf-2048)
-;;   (require 'eaf-evil)
-;;   (defun eaf-org-open-file (file &optional link))
-
-;;   (require 'eaf-evil)
-;;   (define-key key-translation-map (kbd "SPC")
-;;               (lambda (prompt)
-;;                 (if (derived-mode-p 'eaf-mode)
-;;                     (pcase eaf--buffer-app-name
-;;                       ("browser" (if  eaf-buffer-input-focus
-;;                                      (kbd "SPC")
-;;                                    (kbd eaf-evil-leader-key)))
-;;                       ("pdf-viewer" (kbd eaf-evil-leader-key))
-;;                       ("image-viewer" (kbd eaf-evil-leader-key))
-;;                       (_  (kbd "SPC")))
-;;                   (kbd "SPC"))))
-;;   )
-
 ;; (setq tidal-boot-script-path "~/tidal/BootTidal.hs")
 
-(after! tidal
-  (setq tidal-interpreter "/usr/bin/ghci")
-  (setq tidal-boot-script-path "/usr/share/haskell-tidal/BootTidal.hs"))
-
-(defun tidal-run-region-fixed ()
-  "Run tidal-eval-multiple-lines instead of eval-region."
-  (interactive)
-  (tidal-eval-multiple-lines)
-  (set-mark-command t) ;; unmark the region
-  )

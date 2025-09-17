@@ -301,9 +301,11 @@
    ;;;; web-mode
    (web-mode-html-tag-face :foreground teal)
    (web-mode-variable-name-face :foreground variables)
+   (web-mode-html-attr-value-face :foreground green-3)
    (web-mode-function-name-face :foreground functions)
+   (web-mode-function-call-face :foreground blue-2)
    (web-mode-html-tag-bracket-face :foreground (doom-darken teal 0.5))
-   (web-mode-html-attr-name-face :foreground cyan)
+   (web-mode-html-attr-name-face :foreground orange-3)
 
    ;;;; magit
    (magit-section-highlight :background yellow-00)
