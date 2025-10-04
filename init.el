@@ -154,7 +154,7 @@
        (markdown +lsp)          ; writing docs for people to ignore
        ;;nim               ; python + lisp at the speed of c
        ;;nix               ; I hereby declare "nix geht mehr!"
-       ;;ocaml             ; an objective camel
+       (ocaml +lsp)             ; an objective camel
        (org +roam2 +pretty +pandoc +journal)              ; organize your plain life in plain text
        org-journal
        ;;php               ; perl's insecure younger brother

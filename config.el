@@ -80,8 +80,8 @@
 ;;
 
 ;; alpha / transparency
-(set-frame-parameter nil 'alpha-background 100)  ;; Sets transparency for the current frame
-(add-to-list 'default-frame-alist '(alpha-background . 100)) ;; Sets transparency for all new frames
+(set-frame-parameter nil 'alpha-background 95)  ;; Sets transparency for the current frame
+(add-to-list 'default-frame-alist '(alpha-background . 95)) ;; Sets transparency for all new frames
 
 ;; Font
 (setq doom-font (font-spec :family "Maple Mono" :size 14)
@@ -135,7 +135,7 @@
        (subst-char-in-string ?_ ?  buffer-file-name))
     (funcall orig-fun)))
 
-(setq doom-theme 'doom-rouge)
+(setq doom-theme 'doom-flatdawn)
 (setq display-line-numbers-type 'relative)
 
 
@@ -411,6 +411,9 @@
   (setq deft-recursive t))
 
 
+(after! olivetti-mode
+  (olivetti-set-width 110))
+
 ;; org-agenda
 (defun org-agenda-open-hook ()
   "Hook to be run when org-agenda is opened"
@@ -434,7 +437,10 @@
 
   ;; Clean time grid - remove the conflicting configuration
   (setq org-agenda-current-time-string "")
-  (setq org-agenda-time-grid '((daily) () "" ""))
+  (setq org-agenda-time-grid
+        '((daily today require-timed)
+          (800 900 1000 1100 1200 1300 1400 1500 1600 1700 1800)
+          "" "----------------"))
 
   ;; Category icons - theme colors will be used
   (when (featurep 'all-the-icons)
