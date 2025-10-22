@@ -1,0 +1,34 @@
+# -*- mode: snippet -*-
+# name: dev-nix-shell
+# key: dev-nix-shell
+# condition: t
+# --
+{ pkgs ? import <nixpkgs> { } }:
+with pkgs;
+mkShell {
+  buildInputs = [ ${1:package} ];
+  shellHook = ''
+    export PROJECT_ROOT="\$PWD"
+    
+    # Define aliases as pairs: name command name command...
+    aliases=(
+      "root" "cd \"\$PROJECT_ROOT\""
+      "${2:alias1}" "${3:command1}"
+      "${4:alias2}" "${5:command2}"
+    )
+    
+    # Register and display aliases
+    echo -e "\\n\\033[33m<><><><><><> ${6:DEV} ENVIRONMENT READY <><><><><><>\\033[0m\\n"
+    
+    i=0
+    while [ \$i -lt ''$\{#aliases[@]} ]; do
+      alias_name=''$\{aliases[\$i]}
+      alias_cmd=''$\{aliases[\$((i+1))]}
+      alias "\$alias_name=\$alias_cmd"
+      echo -e "\\033[34m\$alias_name\\033[0m\\t\$alias_cmd"
+      i=\$((i+2))
+    done
+    echo ""
+  '';
+}
+$00

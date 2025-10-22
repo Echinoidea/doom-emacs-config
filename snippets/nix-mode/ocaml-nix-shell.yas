@@ -1,0 +1,22 @@
+# -*- mode: snippet -*-
+# name: ocaml-nix-shell
+# key: ocaml-nix-shell
+# condition: t
+# --
+{ pkgs ? import <nixpkgs> { } }:
+
+with pkgs;
+
+mkShell {
+  buildInputs = [ dune_3 opam ocaml ];
+  shellHook = ''
+    eval $(opam env)
+
+    export PROJECT_ROOT="$PWD"
+    alias root='cd "$PROJECT_ROOT"'
+    alias run='$PROJECT_ROOT/_build/default/bin/main.exe'
+
+    echo -e "\n\033[33m<><><><><><> OCAML ENVIRONMENT READY <><><><><><>\033[0m\n"
+    echo -e "\033[34mroot\033[0m\tcd to project root\n\033[34mrun\033[0m\texecute main.exe"
+  '';
+}

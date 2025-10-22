@@ -9,6 +9,7 @@
 ;; Disable savehist mode because it is causing CPU consumption
 (savehist-mode -1)
 
+(setq shell-file-name (executable-find "bash"))
 
 (after! vterm
   (setq vterm-shell "/sbin/fish"))
@@ -80,13 +81,22 @@
 ;;
 
 ;; alpha / transparency
-(set-frame-parameter nil 'alpha-background 95)  ;; Sets transparency for the current frame
-(add-to-list 'default-frame-alist '(alpha-background . 95)) ;; Sets transparency for all new frames
+(set-frame-parameter nil 'alpha-background 100)  ;; Sets transparency for the current frame
+(add-to-list 'default-frame-alist '(alpha-background . 100)) ;; Sets transparency for all new frames
 
 ;; Font
-(setq doom-font (font-spec :family "Maple Mono" :size 14)
-      doom-serif-font (font-spec :family "GoMono Nerd Font" :size 14)
-      doom-variable-pitch-font (font-spec :family "Latin Modern Roman" :size 12))
+(setq doom-font (font-spec :family "AporeticSansMonoNerdFont" :size 14)
+      doom-serif-font (font-spec :family "Maple Mono NF" :size 14)
+      doom-variable-pitch-font (font-spec :family "Maple Mono NF" :size 12))
+
+(after! org
+  ;; Add a custom emphasis marker for bold-italic
+  (add-to-list 'org-emphasis-alist
+               '("=" (:weight bold :slant italic)
+                 "<bi>" "</bi>"))
+  
+  ;; Update the regexp
+  (org-set-emph-re 'org-emphasis-alist org-emphasis-alist))
 
 (defun show-face-at-point ()
   "Show the face at point."
@@ -137,6 +147,18 @@
 
 (setq doom-theme 'doom-flatdawn)
 (setq display-line-numbers-type 'relative)
+
+
+(defun my/run-script-after-theme-export (orig-fun &rest args)
+  "Run custom shell script after theme export."
+  (let ((result (apply orig-fun args)))
+    (message "Theme export finished, running postrun script")
+    (start-process-shell-command
+     "postrun" nil
+     "/home/gabriel/.config/wal/postrun")
+    result))
+
+(advice-add 'theme-magic-export-from-emacs :around #'my/run-script-after-theme-export)
 
 
 ;; Centaur tabs
@@ -244,56 +266,50 @@
 (setq! lsp-auto-execute-action nil)
 
 (after! corfu
-  (setq! corfu-auto-delay 0.0)
-  )
+  (setq! corfu-auto-delay 0.0))
 
-(add-to-list 'auto-mode-alist '("\\.tsx\\'" . typescript-tsx-mode))
+(add-hook 'lua-mode-hook
+          (lambda ()
+            (setq-local lsp-disabled-clients '(semgrep-ls))))
 
-(after! typescript-mode
-  (add-hook 'typescript-tsx-mode-hook #'lsp!))
+;; Configure TypeScript language server BEFORE lsp-mode loads
+(setq lsp-clients-typescript-server-path "/run/current-system/sw/bin/typescript-language-server")
 
-(add-hook! '(typescript-mode-hook typescript-tsx-mode-hook rust-mode-hook emacs-lisp-mode-hook) #'rainbow-delimiters-mode)
+(after! lsp-mode
+  ;; Make sure ts-ls knows about tree-sitter modes
+  (lsp-register-client
+   (make-lsp-client
+    :new-connection (lsp-stdio-connection
+                     (lambda () (list "/run/current-system/sw/bin/typescript-language-server" "--stdio")))
+    :activation-fn (lsp-activate-on "typescript" "typescriptreact")
+    :priority -1
+    :server-id 'ts-ls
+    :add-on? t)))
 
-(defun lsp-booster--advice-json-parse (old-fn &rest args)
-  "Try to parse bytecode instead of json."
-  (or
-   (when (equal (following-char) ?#)
-     (let ((bytecode (read (current-buffer))))
-       (when (byte-code-function-p bytecode)
-         (funcall bytecode))))
-   (apply old-fn args)))
-(advice-add (if (progn (require 'json)
-                       (fboundp 'json-parse-buffer))
-                'json-parse-buffer
-              'json-read)
-            :around
-            #'lsp-booster--advice-json-parse)
+(use-package! typescript-ts-mode
+  :mode (("\\.ts\\'" . typescript-ts-mode)
+         ("\\.tsx\\'" . tsx-ts-mode))
+  :config
+  (add-hook 'typescript-ts-mode-hook #'lsp!)
+  (add-hook 'tsx-ts-mode-hook #'lsp!))
 
-(defun lsp-booster--advice-final-command (old-fn cmd &optional test?)
-  "Prepend emacs-lsp-booster command to lsp CMD."
-  (let ((orig-result (funcall old-fn cmd test?)))
-    (if (and (not test?)                             ;; for check lsp-server-present?
-             (not (file-remote-p default-directory)) ;; see lsp-resolve-final-command, it would add extra shell wrapper
-             lsp-use-plists
-             (not (functionp 'json-rpc-connection))  ;; native json-rpc
-             (executable-find "emacs-lsp-booster"))
-        (progn
-          (when-let ((command-from-exec-path (executable-find (car orig-result))))  ;; resolve command from exec-path (in case not found in $PATH)
-            (setcar orig-result command-from-exec-path))
-          (message "Using emacs-lsp-booster for %s!" orig-result)
-          (cons "emacs-lsp-booster" orig-result))
-      orig-result)))
-(advice-add 'lsp-resolve-final-command :around #'lsp-booster--advice-final-command)
+(add-hook! '(tsx-ts-mode-hook typescript-ts-mode-hook) #'emmet-mode)
 
-(after! rustic
-  (setq rustic-lsp-server 'rust-analyzer)
-  (setq rustic-format-on-save t)
-  (setq rustic-format-display-buffer nil)
-  (setq lsp-inlay-hints-mode t))
+;; (after! lsp-tailwindcss
+;;   (setq lsp-tailwindcss-server-path "/run/current-system/sw/bin/tailwindcss-language-server"))
+
+(after! lsp-javascript
+  (setq lsp-typescript-npm "/run/current-system/sw/bin/npm"))
 
 
-;; (setq lsp-clients-typescript-server "/usr/bin/typescript-language-server")
-;; (setq lsp-clients-typescript-server-args '("--stdio" "--tsserver-path" "/usr/bin/tsserver"))
+(add-hook! '(typescript-ts-mode-hook tsx-ts-mode-hook emacs-lisp-mode-hook) #'rainbow-delimiters-mode)
+
+
+;; (after! rustic
+;;   (setq rustic-lsp-server 'rust-analyzer)
+;;   (setq rustic-format-on-save t)
+;;   (setq rustic-format-display-buffer nil)
+;;   (setq lsp-inlay-hints-mode t))
 
 ;; (require 'web-mode)
 ;; (add-to-list 'auto-mode-alist '("\\.tsx\\'" . web-mode))
@@ -304,14 +320,6 @@
 ;; ;; enable typescript-tslint checker
 ;; (flycheck-add-mode 'typescript-tslint 'web-mode)
 
-(setq tide-node-executable "/usr/bin/node")
-
-;; (use-package! lsp-bridge
-;;   :config
-;;   (global-lsp-bridge-mode))
-
-(add-hook 'vue-mode-hook #'lsp!)
-
 ;; Enable diagnostics popups
 (add-hook 'flycheck-mode-hook #'flycheck-popup-tip-mode)
 
@@ -320,7 +328,7 @@
 ;; ┗━┛╹┗╸┗━┛   ╹ ╹┗━┛╺┻┛┗━╸
 ;; Org Mode
 
-(add-hook 'org-mode-hook 'turn-on-org-cdlatex)
+;; (add-hook 'org-mode-hook 'turn-on-org-cdlatex)
 
 (setq! doom-modeline-enable-word-count t)
 
@@ -376,7 +384,8 @@
               "~/org/todo-midas.org"
               "~/org/todo-school.org"
               "~/org/todo-gamedev.org"
-              "~/org/todo-programming.org"))
+              "~/org/todo-programming.org"
+              "~/org/calendar.org"))
   )
 
 (setq org-log-done 'time)
@@ -393,17 +402,33 @@
       :prefix "s"
       :desc "Promote heading" "<" #'my/org-do-promote)
 
-(with-eval-after-load 'org (global-org-modern-mode))
+(add-hook 'org-mode-hook #'org-modern-mode)
+(add-hook 'org-agenda-finalize-hook #'org-modern-agenda)
 
-(after! biblio
-  (setq org-cite-global-bibliography '("~/org/references.bib"))
-  )
+;; (after! biblio
+;;   (setq org-cite-global-bibliography '("~/org/references.bib"))
+;;   )
 
 ;; Org mode - PDF
 (save-place-mode 1)
 
-(org-babel-do-load-languages
- 'org-babel-load-languages '((C . t)))
+;; (org-babel-do-load-languages
+;;  'org-babel-load-languages '((C . t)))
+
+(after! org-modern
+  (setq
+   ;; Edit settings
+   org-auto-align-tags nil
+   org-tags-column 0
+   org-fold-catch-invisible-edits 'show-and-error
+   org-special-ctrl-a/e t
+   org-insert-heading-respect-content t
+
+   ;; Org styling, hide markup etc.
+   org-hide-emphasis-markers t
+   org-pretty-entities t
+   org-agenda-tags-column 0
+   org-ellipsis "…"))
 
 ;; Deft
 (after! deft
@@ -543,7 +568,6 @@
 ;; Additional styling for super-agenda headers
 (custom-set-faces!
   '(org-super-agenda-header :height 1.1 :weight bold :underline nil :extend t))
-
 
 
 (with-eval-after-load 'org (global-org-modern-mode))

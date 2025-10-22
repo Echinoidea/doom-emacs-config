@@ -85,57 +85,10 @@
 (package! markdown-mode)
 (package! yasnippet)
 
-                                        ; (package! organic-green-theme)
-                                        ; (package! soothe-theme)
-                                        ; (package! cherry-blossom-theme)
-                                        ; (package! espresso-theme)
-                                        ; (package! hc-zenburn-theme)
-                                        ; (package! jazz-theme)
-                                        ; (package! afternoon-theme)
-                                        ; (package! anti-zenburn-theme)
-;; (package! sublime-themes)
-                                        ; (package! darktooth-theme)
 (package! tao-theme)
 (package! kaolin-themes)
-                                        ; (package! apropospriate-theme)
-                                        ; (package! ample-theme)
-                                        ; (package! moe-theme)
-                                        ; (package! amber-glow-theme)
-                                        ; (package! berry-theme)
-                                        ; (package! ember-twilight-theme)
-                                        ; (package! roseline-theme)
-                                        ; (package! solarized-gruvbox-theme)
-                                        ; (package! stimmung-themes)
-                                        ; (package! naysayer-theme)
 (package! ef-themes)
 (package! almost-mono-themes)
-                                        ; (package! badwolf-theme)
-                                        ; (package! birds-of-paradise-plus-theme)
-                                        ; (package! brutalist-theme)
-                                        ; (package! clues-theme)
-                                        ; (package! creamsody-theme)
-                                        ; (package! phoenix-dark-pink-theme)
-                                        ; (package! eziam-themes)
-                                        ; (package! faff-theme)
-                                        ; (package! forest-blue-theme)
-                                        ; (package! gotham-theme)
-;; (package! green-phoshor-theme)
-                                        ; (package! inkpot-theme)
-                                        ; (package! lavender-theme)
-                                        ; (package! laguna-theme)
-                                        ; (package! metalheart-theme)
-                                        ; (package! naga-theme)
-                                        ; (package! nordic-night-theme)
-;; (package! old-lace-theme)
-                                        ; (package! slime-theme)
-;; (package! spike-theme)
-                                        ; (package! sunburn-theme)
-                                        ; (package! suscolors-theme)
-                                        ; (package! toxi-theme)
-                                        ; (package! tron-legacy-theme)
-                                        ; (package! warm-night-theme)
-                                        ; (package! purple-haze-theme)
-
 (package! colorless-themes
   :recipe (:host nil :repo "https://git.sr.ht/~lthms/colorless-themes.el"
            :files ("*.el")
@@ -156,17 +109,9 @@
 
 (package! catppuccin-theme)
 
-(package! kuronami-theme)
-
-(package! inkpot-theme)
-
 (package! spacious-padding)
 
 (package! doric-themes)
-
-(package! standard-themes)
-
-(package! stimmung-themes)
 
 (package! olivetti-mode
   :recipe (:host nil :repo "https://github.com/rnkn/olivetti"
@@ -189,7 +134,7 @@
 ;;   :recipe (:host github :repo "manateelazycat/emacs-application-framework"
 ;;            :files ("eaf.el" "src/lisp/*.el")))
 
-(package! tidal)
+;; (package! tidal)
 
 (package! buffer-box
   :recipe (:host nil :repo "https://github.com/rougier/buffer-box"
@@ -206,10 +151,6 @@
 
 (package! rainbow-delimiters)
 
-(package! org-modern-indent)
-
-(package! discover-my-major)
-
 (package! prism)
 
 (package! colorful-mode)
@@ -217,3 +158,11 @@
 (package! dimmer)
 
 (package! fountain-mode)
+
+;; (package! lsp-tailwindcss :recipe (:host github :repo "merrickluo/lsp-tailwindcss"))
+
+(package! typescript-mode)
+
+(package! buffer-box
+  :recipe (:host nil :repo "https://codeberg.org/danrobi/nix-flakes"
+           :files ("*.el")))
