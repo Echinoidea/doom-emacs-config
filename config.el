@@ -38,8 +38,13 @@
 ;; Avy
 ;;
 
+;; Make avy goto-char-2 put cursor at END of match instead of after first char
 (after! evil
-  (evil-define-key 'normal 'global "f" #'avy-goto-char-2))
+  (defadvice! my/goto-after-char-2 (&rest _)
+    :after #'evil-avy-goto-char-2
+    (forward-char 2)))
+
+(map! :nv "f" #'evil-avy-goto-char-2)
 
 (map! :leader
       (:prefix-map ("j" . "jump and edit")
@@ -145,7 +150,7 @@
        (subst-char-in-string ?_ ?  buffer-file-name))
     (funcall orig-fun)))
 
-(setq doom-theme 'doom-flatdawn)
+(setq doom-theme 'doom-homage-black)
 (setq display-line-numbers-type 'relative)
 
 
@@ -160,6 +165,26 @@
 
 (advice-add 'theme-magic-export-from-emacs :around #'my/run-script-after-theme-export)
 
+(use-package! doom-wallust
+  :config
+  (doom-wallust-initialize)
+  
+  (map! :leader
+        (:prefix ("h r" . "wallust")
+         :desc "Browse themes" "b" #'doom-wallust-browse-themes
+         :desc "Select theme" "s" #'doom-wallust-select-theme
+         :desc "Reload theme" "w" #'doom-wallust-reload-theme)))
+
+;; (defun reload-wallust-theme ()
+;;   "Reload the doom-wallust theme after wallust updates it."
+;;   (interactive)
+;;   (let ((theme-file (expand-file-name "themes/doom-wallust-theme.el" doom-user-dir)))
+;;     (load-file theme-file)
+;;     (doom/reload-theme)))
+
+;; (map! :leader
+;;       :desc "Reload wallust theme"
+;;       "h r w" #'reload-wallust-theme)
 
 ;; Centaur tabs
 (after! centaur-tabs
@@ -286,6 +311,22 @@
     :server-id 'ts-ls
     :add-on? t)))
 
+;; nix nil-lsp
+(after! lsp-mode
+  (add-to-list 'lsp-language-id-configuration '(nix-mode . "nix"))
+  (lsp-register-client
+   (make-lsp-client :new-connection (lsp-stdio-connection "nil")
+                    :major-modes '(nix-mode)
+                    :priority 0
+                    :server-id 'nil-ls
+                    :initialization-options
+                    (lambda ()
+                      `(:nil (:flake (:autoArchiveInputs :json-false
+                                      :autoEvalInputs :json-false)))))))
+
+(after! lsp-mode
+  (add-to-list 'lsp-file-watch-ignored-directories "[/\\\\]\\.direnv\\'"))
+
 (use-package! typescript-ts-mode
   :mode (("\\.ts\\'" . typescript-ts-mode)
          ("\\.tsx\\'" . tsx-ts-mode))
@@ -294,6 +335,17 @@
   (add-hook 'tsx-ts-mode-hook #'lsp!))
 
 (add-hook! '(tsx-ts-mode-hook typescript-ts-mode-hook) #'emmet-mode)
+
+(after! lsp-mode
+  (lsp-register-client
+   (make-lsp-client :new-connection (lsp-stdio-connection "ocamllsp")
+                    :major-modes '(tuareg-mode)
+                    :server-id 'ocaml-lsp)))
+
+(add-hook 'tuareg-mode-hook #'lsp-deferred)
+
+(after! tuareg
+  (remove-hook 'tuareg-mode-hook #'opam-switch-mode))
 
 ;; (after! lsp-tailwindcss
 ;;   (setq lsp-tailwindcss-server-path "/run/current-system/sw/bin/tailwindcss-language-server"))
@@ -304,6 +356,9 @@
 
 (add-hook! '(typescript-ts-mode-hook tsx-ts-mode-hook emacs-lisp-mode-hook) #'rainbow-delimiters-mode)
 
+(after! lua-mode
+  (setq lsp-file-watch-threshold 2000)
+  )
 
 ;; (after! rustic
 ;;   (setq rustic-lsp-server 'rust-analyzer)
@@ -322,6 +377,22 @@
 
 ;; Enable diagnostics popups
 (add-hook 'flycheck-mode-hook #'flycheck-popup-tip-mode)
+
+
+;; Code Testing
+
+(defun test-busted ()
+  "Run busted tests. Requires .envrc with luaPackages.busted in flake.nix."
+  (interactive nil lua-mode)  ; Only available in lua-mode
+  (when (envrc--find-env-dir)
+    (unless envrc-mode
+      (envrc-mode 1))
+    (let ((default-directory (file-name-directory (buffer-file-name)))
+          (output (shell-command-to-string "eval \"$(direnv export bash)\" && busted spec/")))
+      (with-current-buffer (get-buffer-create "*Busted Tests*")
+        (erase-buffer)
+        (insert output)
+        (display-buffer (current-buffer))))))
 
 ;; ┏━┓┏━┓┏━╸   ┏┳┓┏━┓╺┳┓┏━╸
 ;; ┃ ┃┣┳┛┃╺┓   ┃┃┃┃ ┃ ┃┃┣╸
@@ -428,8 +499,13 @@
    org-hide-emphasis-markers t
    org-pretty-entities t
    org-agenda-tags-column 0
-   org-ellipsis "…"))
+   org-ellipsis "...")
+  org-modern-star '("✿" "❀" "❁" "❃" "❋" "✾" "✽" "✻")
+  )
+(setq org-modern-star '("✿" "❀" "❁" "❃" "❋" "✾" "✽" "✻"))
 
+;; org-modern-star '("●" "○" "◎" "◉" "◆" "◇" "◆" "◇")
+;; org-modern-star '("✿" "❀" "❁" "❃" "❋" "✾" "✽" "✻")
 ;; Deft
 (after! deft
   (setq deft-directory "~/org/deft/")
@@ -725,18 +801,10 @@
 (after! gptel
   (setq gptel-default-mode 'org-mode))
 
-(setq auth-sources '("~/.authinfo.gpg"))
-
-;; GPTel
-(use-package! gptel
-  :config
-  (require 'auth-source)
-  (let ((auth-token (auth-source-pick-first-password :host "api.openai.com" :user "apikey")))
-    (when auth-token
-      (setq gptel-api-key auth-token))))
-
-(after! gptel
-  (setq gptel-model 'gpt-4o))
+;; (setq auth-sources '("~/.gnupg"))
+;; 
+(after! auth-source
+  (setq auth-sources '("~/.authinfo.gpg")))
 
 (after! gptel
   (gptel-make-ollama "Ollama"

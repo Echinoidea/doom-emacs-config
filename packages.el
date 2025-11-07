@@ -157,8 +157,6 @@
 
 (package! dimmer)
 
-(package! fountain-mode)
-
 ;; (package! lsp-tailwindcss :recipe (:host github :repo "merrickluo/lsp-tailwindcss"))
 
 (package! typescript-mode)
@@ -166,3 +164,11 @@
 (package! buffer-box
   :recipe (:host nil :repo "https://codeberg.org/danrobi/nix-flakes"
            :files ("*.el")))
+
+
+(package! yuck-mode)
+
+(package! doom-wallust
+  :recipe (:local-repo "~/code/elisp/doom-wallust"
+           :files ("*.el")))
+

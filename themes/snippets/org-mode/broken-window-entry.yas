@@ -1,0 +1,16 @@
+# -*- mode: org -*-
+# name: Broken Window Entry
+# key: broken-window-entry
+# --
+* Broken Windows
+<`(format-time-string "%Y-%m-%d %a")`>
+** Third Floor
+*** Description
+$0
+*** Solution
+** Second Floor
+*** Description
+*** Solution
+** First Floor
+*** Description
+*** Solution
